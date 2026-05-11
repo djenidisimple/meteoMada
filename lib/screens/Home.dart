@@ -16,9 +16,9 @@ class Home extends StatelessWidget {
         Center(
             child: ElevatedButton(
           onPressed: () {
-            // Action when the button is pressed
+            Navigator.pushNamed(context, '/List');
           },
-          child: Text('Go to Details'),
+          child: Text('Go to List'),
         ))
       ],
     ));

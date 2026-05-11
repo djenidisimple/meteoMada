@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meteomada/screens/List.dart';
 import 'screens/home.dart';
 
 void main() {
@@ -15,7 +16,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Home(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const Home(),
+        '/List': (context) => const List(),
+      },
     );
   }
 }
