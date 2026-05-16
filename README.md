@@ -23,8 +23,6 @@ Ce projet est une application mobile multiplateforme conçue pour fournir des in
 
 Pour contribuer ou développer cette application, consultez la [documentation officielle Flutter](https://docs.flutter.dev/).
 
-### Ressources utiles
+### Preparation de conception
 
-- [Apprendre Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Créer votre première application Flutter](https://docs.flutter.dev/get-started/codelab)
-- [Ressources d'apprentissage Flutter](https://docs.flutter.dev/reference/learning-resources)
+- loading
