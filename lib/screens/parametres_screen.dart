@@ -1,0 +1,399 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meteomada/theme/app_theme.dart';
+import 'package:meteomada/widgets/glass_card.dart';
+import 'package:meteomada/widgets/custom_switch.dart';
+import 'package:meteomada/providers/utilisateur_provider.dart';
+
+class ParametresScreen extends StatelessWidget {
+  const ParametresScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(color: Color(0xFF080C18)),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+            onPressed: () => context.pop(),
+          ),
+          title: Text('Paramètres',
+              style: GoogleFonts.dmSans(
+                  fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+        ),
+        body: Consumer<UtilisateurProvider>(
+          builder: (_, up, __) {
+            final user = up.utilisateur;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _profileCard(user?.pseudo ?? 'Utilisateur', user?.typeUtilisateur ?? 'citoyen'),
+                  const SizedBox(height: 16),
+                  _typeUtilisateurSection(up, user?.typeUtilisateur ?? 'citoyen'),
+                  const SizedBox(height: 12),
+                  _langueSelector(up, user?.languePreferee ?? 'fr'),
+                  const SizedBox(height: 12),
+                  _affichageSection(),
+                  const SizedBox(height: 12),
+                  _notificationsSection(up, user),
+                  const SizedBox(height: 12),
+                  _aboutSection(context),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _profileCard(String pseudo, String type) {
+    final color = _typeColor(type);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.accentBlue.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.accentBlue.withOpacity(0.35), width: 0.8),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                  colors: [AppTheme.accentBlue, AppTheme.accentBlueLight]),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(child: Text('🇲🇬', style: TextStyle(fontSize: 22))),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(pseudo,
+                  style: GoogleFonts.syne(
+                      fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+              const SizedBox(height: 2),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.20),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: color.withOpacity(0.35), width: 0.5),
+                ),
+                child: Text(_typeLabel(type),
+                    style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _typeUtilisateurSection(UtilisateurProvider up, String current) {
+    return GlassCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Type d\'utilisateur',
+              style: GoogleFonts.dmSans(
+                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              _typeChip('🌾', 'Agriculteur', 'agriculteur', AppTheme.accentYellow, current, up),
+              _typeChip('🎣', 'Pêcheur', 'pecheur', AppTheme.accentGreen, current, up),
+              _typeChip('👤', 'Citoyen', 'citoyen', AppTheme.accentBlue, current, up),
+              _typeChip('🚢', 'Marin', 'marin', AppTheme.accentOrange, current, up),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _typeChip(String emoji, String label, String type, Color color,
+      String current, UtilisateurProvider up) {
+    final isActive = current == type;
+    return GestureDetector(
+      onTap: () => up.updateTypeUtilisateur(type),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: isActive
+            ? BoxDecoration(
+                color: color.withOpacity(0.20),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: color.withOpacity(0.40), width: 0.8),
+              )
+            : BoxDecoration(
+                color: Colors.white.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.5),
+              ),
+        child: Text('$emoji $label',
+            style: GoogleFonts.dmSans(
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                color: isActive ? color : AppTheme.textSecondary)),
+      ),
+    );
+  }
+
+  Widget _langueSelector(UtilisateurProvider up, String current) {
+    return GlassCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Langue',
+              style: GoogleFonts.dmSans(
+                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _langueTile('🇫🇷', 'Français', 'fr', current, up),
+              const SizedBox(width: 6),
+              _langueTile('🇬🇧', 'English', 'en', current, up),
+              const SizedBox(width: 6),
+              _langueTile('🇲🇬', 'Malagasy', 'mg', current, up),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _langueTile(
+      String flag, String label, String code, String current, UtilisateurProvider up) {
+    final isActive = current == code;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          up.updateLangue(code);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: isActive
+              ? BoxDecoration(
+                  color: AppTheme.accentBlue.withOpacity(0.20),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                      color: AppTheme.accentBlue.withOpacity(0.40), width: 0.8),
+                )
+              : BoxDecoration(
+                  color: Colors.white.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+          child: Column(
+            children: [
+              Text(flag, style: const TextStyle(fontSize: 18)),
+              const SizedBox(height: 2),
+              Text(label,
+                  style: GoogleFonts.dmSans(
+                      fontSize: 10,
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                      color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _affichageSection() {
+    return GlassCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Affichage',
+              style: GoogleFonts.dmSans(
+                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Température',
+                  style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white)),
+              Row(
+                children: [
+                  _tempToggle('°C', true),
+                  const SizedBox(width: 6),
+                  _tempToggle('°F', false),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Thème sombre',
+                  style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white)),
+              CustomSwitch(value: true, activeColor: AppTheme.accentBlue, onChanged: () {}),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tempToggle(String label, bool isActive) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: isActive
+          ? BoxDecoration(
+              color: AppTheme.accentBlue.withOpacity(0.20),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppTheme.accentBlue.withOpacity(0.40), width: 0.8),
+            )
+          : BoxDecoration(
+              color: Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(8),
+            ),
+      child: Text(label,
+          style: GoogleFonts.dmSans(
+              fontSize: 12,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
+    );
+  }
+
+  Widget _notificationsSection(UtilisateurProvider up, dynamic user) {
+    return GlassCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Notifications',
+              style: GoogleFonts.dmSans(
+                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          const SizedBox(height: 10),
+          _notifRow('🌀', 'Alertes cycloniques',
+              user?.alertesCycloneActivees ?? true, AppTheme.accentRed, () {
+            up.updateAlertesCyclone(!(user?.alertesCycloneActivees ?? true));
+          }),
+          Divider(height: 16, color: Colors.white.withOpacity(0.06)),
+          _notifRow('🌧', 'Alertes de pluie',
+              user?.alertesPluieActivees ?? false, AppTheme.accentBlue, () {
+            up.updateAlertesPluie(!(user?.alertesPluieActivees ?? false));
+          }),
+          if (user?.typeUtilisateur == 'agriculteur') ...[
+            Divider(height: 16, color: Colors.white.withOpacity(0.06)),
+            _notifRow('🌾', 'Conseils culturaux', true, AppTheme.accentYellow, () {}),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _notifRow(String emoji, String label, bool value, Color color, VoidCallback onChanged) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 14)),
+            const SizedBox(width: 8),
+            Text(label,
+                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white)),
+          ],
+        ),
+        CustomSwitch(value: value, activeColor: color, onChanged: onChanged),
+      ],
+    );
+  }
+
+  Widget _aboutSection(BuildContext context) {
+    return GlassCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('À propos',
+              style: GoogleFonts.dmSans(
+                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          const SizedBox(height: 10),
+          _infoRow('Source données', 'DGM Madagascar'),
+          const SizedBox(height: 4),
+          _infoRow('Version', '1.0.0'),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {
+              // TODO: ouvrir email support
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Support: contact@toerana.mg'),
+                  backgroundColor: AppTheme.backgroundDark,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: AppTheme.accentBlue.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.accentBlue.withOpacity(0.20)),
+              ),
+              child: Text('Contacter le support',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.accentBlue)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+        Text(value,
+            style: GoogleFonts.dmSans(
+                fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white)),
+      ],
+    );
+  }
+
+  Color _typeColor(String type) {
+    switch (type) {
+      case 'agriculteur': return AppTheme.accentYellow;
+      case 'pecheur': return AppTheme.accentGreen;
+      case 'marin': return AppTheme.accentOrange;
+      default: return AppTheme.accentBlue;
+    }
+  }
+
+  String _typeLabel(String type) {
+    switch (type) {
+      case 'agriculteur': return '🌾 Agriculteur';
+      case 'pecheur': return '🎣 Pêcheur';
+      case 'marin': return '🚢 Marin';
+      default: return '👤 Citoyen';
+    }
+  }
+}
