@@ -1,0 +1,164 @@
+classDiagram
+    class Ville {
+        +String id
+        +String nom
+        +String region
+        +Float latitude
+        +Float longitude
+        +Int altitude
+        +String fuseauHoraire
+        +bool estCotiere
+        +getClimatActuel() Prevision
+        +getPrevisions(int jours) List~Prevision~
+    }
+    
+    class Utilisateur {
+        +String id
+        +String pseudo
+        +String email
+        +String languePreferee
+        +bool alertesCycloneActivees
+        +bool alertesPluieActivees
+        +ajouterFavori(Ville v)
+        +supprimerFavori(String villeId)
+        +consulterMeteo(Ville v)
+        +changerLangue(String langue)
+    }
+    
+    Utilisateur <|-- Agriculteur : héritage
+    Utilisateur <|-- Pecheur : héritage
+    Utilisateur <|-- Touriste : héritage
+    
+    class Agriculteur {
+        +String[] typesCultures
+        +String[] regionsSuivies
+        +bool alertePluieActivee
+        +consulterCalendrierCultural() CalendrierCultural
+        +getRecommandationsSemis() List~String~
+    }
+    
+    class Pecheur {
+        +String[] zonesPeche
+        +String typeBateau
+        +bool alerteMerDangereuse
+        +consulterEtatMer(Ville v) ConditionMarine
+        +estSortieAutorisee() bool
+    }
+    
+    class Touriste {
+        +Date dateArrivee
+        +Date dateDepart
+        +String[] lieuxVisites
+        +comparerClimats(Ville[] villes) Map~String,Prevision~
+        +suggererMeilleurePeriode(String region) String
+    }
+    
+    class Prevision {
+        +String id
+        +DateTime dateHeure
+        +Float temperature
+        +Float temperatureRessentie
+        +String condition
+        +Float humidite
+        +Float vitesseVent
+        +String directionVent
+        +Float probabilitePluie
+        +Float indiceUV
+        +String icone
+        +traduireCondition(String langue) String
+        +estFavorable(String activite) bool
+    }
+    
+    class ConditionMarine {
+        +Float hauteurVagues
+        +Float temperatureEau
+        +String etatMaree
+        +String ventMarin
+        +Float houle
+        +bool baignadeDangereuse
+        +bool pechePossible
+        +getConseilMarin() String
+    }
+    
+    class AlerteCyclone {
+        +String id
+        +String nomCyclone
+        +NiveauAlerte niveau
+        +DateTime dateEmission
+        +DateTime dateFinPrevue
+        +String[] regionsConcernees
+        +String[] consignes
+        +List~PointGPS~ trajectoire
+        +estActive() bool
+        +getRegionsTouchees() List~String~
+    }
+    
+    class NiveauAlerte {
+        <<enumeration>>
+        VERT
+        JAUNE
+        ORANGE
+        ROUGE
+        POST_CYCLONE
+    }
+    
+    class CalendrierCultural {
+        +String id
+        +String region
+        +String typeCulture
+        +Mois[] periodeSemis
+        +Mois[] periodeRecolte
+        +String[] conseilsMeteo
+        +estPeriodeSemis(DateTime date) bool
+        +estPeriodeRecolte(DateTime date) bool
+    }
+    
+    class SourceDonnee {
+        +String id
+        +String nom
+        +String type
+        +String urlAPI
+        +Float fiabilite
+        +DateTime derniereMAJ
+        +recupererDonnees(Ville v) List~Prevision~
+        +estDisponible() bool
+    }
+    
+    class Favori {
+        +String id
+        +DateTime dateAjout
+        +String surnom
+        +bool notificationsActives
+        +int ordreAffichage
+        +getPrevisionResume() String
+    }
+    
+    class Notification {
+        +String id
+        +String titre
+        +String message
+        +TypeNotification type
+        +DateTime dateEnvoi
+        +bool estLue
+        +String villeConcernee
+    }
+    
+    class TypeNotification {
+        <<enumeration>>
+        ALERTE_CYCLONE
+        ALERTE_PLUIE
+        METEO_JOURNALIERE
+        CONSEIL_AGRICOLE
+        ALERTE_MER
+    }
+    
+    Ville "1" --> "*" Prevision : possède
+    Ville "1" --> "0..1" ConditionMarine : a si côtière
+    Utilisateur "1" --> "*" Favori : possède
+    Utilisateur "1" --> "*" Notification : reçoit
+    Favori "*" --> "1" Ville : référence
+    Prevision "*" --> "0..1" ConditionMarine : inclut si applicable
+    AlerteCyclone "*" --> "1..*" Ville : concerne
+    Ville "1" --> "1..*" SourceDonnee : alimentée par
+    CalendrierCultural "*" --> "1" Region : associé à
+    Agriculteur "1" --> "*" CalendrierCultural : consulte

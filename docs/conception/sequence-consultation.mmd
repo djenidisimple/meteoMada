@@ -1,0 +1,47 @@
+sequenceDiagram
+    participant User as Utilisateur
+    participant App as Application Mobile
+    participant Cache as Cache Local
+    participant API as API Météo
+    participant DB as Base de Données
+    
+    User->>App: ouvrirApplication()
+    App->>App: detecterLocalisation()
+    App->>Cache: verifierDonneesEnCache(villeId)
+    
+    alt Cache valide (< 30 min)
+        Cache-->>App: donneesCachees
+        App->>App: formaterAffichage()
+        App-->>User: afficherMeteoActuelle()
+    else Cache expiré ou absent
+        App->>API: requeteMeteoActuelle(lat, lon)
+        API-->>App: donneesMeteoBrutes
+        App->>App: parserDonnees()
+        App->>Cache: mettreEnCache(donnees)
+        App->>DB: sauvegarderHistorique(villeId, donnees)
+        App-->>User: afficherMeteoActuelle()
+    end
+    
+    User->>App: changerVille(recherche)
+    App->>API: rechercherVilles(terme, langue)
+    API-->>App: listeVillesCorrespondantes
+    App-->>User: afficherResultatsRecherche()
+    
+    User->>App: selectionnerVille(villeId)
+    App->>API: requetePrevisions7Jours(villeId, langue)
+    API-->>App: previsions7Jours
+    App->>App: calculerTendances()
+    App-->>User: afficherPrevisionsDetaillees()
+    
+    alt Condition marine (ville côtière)
+        User->>App: consulterOngletMarine()
+        App->>API: requeteConditionsMarines(lat, lon)
+        API-->>App: donneesMarines
+        App->>App: evaluerDangers()
+        App-->>User: afficherEtatMer + conseils
+    end
+    
+    User->>App: ajouterFavori(villeId, surnom)
+    App->>DB: sauvegarderFavori(userId, villeId, surnom)
+    DB-->>App: confirmationEnregistrement
+    App-->>User: favoriAjouté()

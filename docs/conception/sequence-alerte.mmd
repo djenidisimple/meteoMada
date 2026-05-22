@@ -1,0 +1,50 @@
+sequenceDiagram
+    participant Satellite as Détecteur Satellite
+    participant API as API Météo
+    participant System as Système MadaWeather
+    participant Admin as Administrateur
+    participant Push as Service Push
+    participant App as Application Mobile
+    participant User as Utilisateur
+    
+    Satellite->>API: detectionDepression(zone, intensite)
+    API->>System: transmettreDonneesBrutes()
+    System->>System: analyserTrajectoire()
+    System->>System: evaluerNiveauRisque()
+    
+    alt Risque élevé (niveau Orange/Rouge)
+        System->>Admin: alerteNouveauCyclone(nom, niveau, trajectoire)
+        Admin->>System: confirmerAlerte(consignes, regionsConcernees)
+        System->>System: creerAlerteCyclone()
+        System->>System: genererNotifications()
+        System->>Push: diffuserAlerte(alerte, regions)
+        Push->>App: notificationPush(alerteCyclone)
+        App->>User: afficherNotification()
+        User->>App: ouvrirDetailsAlerte()
+        App->>System: requeteDetailsAlerte(idAlerte)
+        System-->>App: detailsComplets + carteTrajectoire
+        App-->>User: afficherCarteInteractive()
+        User->>App: activerSuiviCyclone()
+        App->>System: enregistrerSuivi(userId, alerteId)
+        System-->>App: confirmationActivation
+    else Risque faible (niveau Vert/Jaune)
+        System->>System: surveillanceContinue()
+        System-->>Admin: rapportSurveillance()
+    end
+    
+    loop Toutes les 3 heures
+        API->>System: miseAJourPositionCyclone()
+        System->>System: recalculerTrajectoire()
+        System->>System: mettreAJourAlerte()
+        System->>Push: notificationMiseAJour(alerteId)
+        Push->>App: notification(nouvellePosition)
+        App-->>User: miseAJourCarte()
+    end
+    
+    alt Fin du cyclone
+        System->>Admin: propositionFinAlerte()
+        Admin->>System: confirmerFinAlerte()
+        System->>Push: notificationFinAlerte()
+        Push->>App: notificationFin()
+        App-->>User: messageFinAlerte + bilan
+    end

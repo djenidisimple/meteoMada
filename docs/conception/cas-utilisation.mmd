@@ -1,0 +1,29 @@
+graph TD
+    U([Utilisateur standard]) --> UC1(Consulter météo du jour)
+    U --> UC2(Rechercher une ville)
+    U --> UC3(Voir prévisions 7 jours)
+    U --> UC4(Ajouter ville aux favoris)
+    U --> UC5(Changer langue malgache/français)
+    
+    A([Agriculteur]) --> UC6(Consulter météo agricole)
+    A --> UC7(Recevoir alertes pluie)
+    A --> UC8(Voir calendrier cultural)
+    UC6 -->|include| UC2
+    
+    P([Pêcheur]) --> UC9(Consulter météo marine)
+    P --> UC10(Voir état de la mer)
+    P --> UC11(Recevoir alertes sortie mer)
+    UC9 -->|include| UC2
+    
+    T([Touriste]) --> UC12(Voir météo des plages)
+    T --> UC13(Comparer climats régions)
+    T --> UC14(Planifier itinéraire météo)
+    
+    Admin([Administrateur]) --> UC15(Gérer les sources de données)
+    Admin --> UC16(Émettre alerte cyclone)
+    Admin --> UC17(Modérer signalements)
+    
+    UC16 -.->|déclenche| N([Service de notifications Push])
+    N --> U
+    N --> A
+    N --> P

@@ -1,0 +1,36 @@
+stateDiagram-v2
+    [*] --> Surveillance
+    
+    Surveillance --> DepressionTropicale : Dépression détectée<br/>(vents < 63 km/h)
+    
+    DepressionTropicale --> TempeteTropicale : Intensification<br/>(vents 63-118 km/h)
+    DepressionTropicale --> Dissipation : Perte d'intensité
+    
+    TempeteTropicale --> CycloneTropical : Intensification<br/>(vents > 118 km/h)
+    TempeteTropicale --> Dissipation : Perte d'intensité
+    
+    CycloneTropical --> CycloneIntense : Vents > 166 km/h
+    CycloneTropical --> AlerteJaune : Menace Madagascar
+    CycloneTropical --> Dissipation : Changement de trajectoire
+    
+    CycloneIntense --> AlerteOrange : Approche des côtes
+    CycloneIntense --> AlerteRouge : Impact direct imminent
+    
+    AlerteJaune --> AlerteOrange : Intensification
+    AlerteJaune --> FinAlerte : Éloignement confirmé
+    
+    AlerteOrange --> AlerteRouge : Aggravation<br/>(impact sous 12h)
+    AlerteOrange --> AlerteJaune : Amélioration
+    
+    AlerteRouge --> PhasePostCyclone : Cyclone passé<br/>(dégâts à évaluer)
+    
+    PhasePostCyclone --> Bilan : Évaluation complète
+    Bilan --> Surveillance : Retour à la normale
+    
+    Dissipation --> Surveillance
+    FinAlerte --> Surveillance
+    
+    note right of AlerteJaune : • Information populations<br/>• Préparation kits urgence
+    note right of AlerteOrange : • Écoles fermées<br/>• Évacuations préventives<br/>• Activation BNGRC
+    note right of AlerteRouge : • Confinement total<br/>• Alerte SMS obligatoire<br/>• Secours en alerte max
+    note right of PhasePostCyclone : • Activation aide humanitaire<br/>• Évaluation dégâts<br/>• Distribution vivres
