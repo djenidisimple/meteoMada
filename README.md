@@ -1,33 +1,30 @@
 # MeteoMada
 
-MeteoMada est une application mobile de météo pour Madagascar, développée avec **Flutter**.
+MeteoMada est une application mobile météo pour Madagascar, développée avec **Flutter**.
 
 ## À propos du projet
 
-Ce projet est une application mobile multiplateforme conçue pour fournir des informations météorologiques actualisées pour Madagascar. L'application est en cours de développement et sera déployée sur les plateformes Android, iOS, Web, Windows, Linux et macOS.
+Application mobile multiplateforme qui fournit des informations météorologiques pour Madagascar. L'application fonctionne sans serveur back-end : les données météo sont récupérées directement depuis une API externe et stockées localement dans une base SQLite.
 
-## Caractéristiques
+## Fonctionnalités
 
-- 📱 Application mobile multiplateforme avec Flutter
-- 🌦️ Informations météorologiques en temps réel
-- 🗺️ Couverture complète de Madagascar (23 régions)
-- 🌡️ Données sur la température, l'humidité, le vent et bien plus
-- ⚠️ Alertes cyclones en temps réel
-- 🌾 Module météo agricole (riziculture, vanille, etc.)
-- 🎣 Module météo marine pour les pêcheurs
-- 🏖️ Recommandations touristiques par région
-- 🇲🇬 Support bilingue Malgache / Français
+- 🌦️ Météo actuelle et prévisions 7 jours
+- 🗺️ Couverture des 23 régions de Madagascar
+- 🌡️ Température, humidité, vent, indice UV
+- ⚠️ Alertes cyclones avec notifications locales
+- 🌾 Calendrier cultural par région
+- 🎣 Conditions marines pour les villes côtières
+- 🏖️ Comparaison de climats entre régions
+- ⭐ Villes favorites
+- 🇲🇬 Bilingue malgache / français
+- 📦 Stockage local SQLite
 
-## Technologies utilisées
+## Technologies
 
-- **Flutter** - Framework pour le développement multiplateforme
+- **Flutter** - Framework multiplateforme
 - **Dart** - Langage de programmation
-- **Mermaid** - Diagrammes de conception UML
-- Plateforme cible : Android, iOS, Web, Windows, Linux, macOS
-
-## Démarrage
-
-Pour contribuer ou développer cette application, consultez la [documentation officielle Flutter](https://docs.flutter.dev/).
+- **SQLite** - Base de données locale
+- **Mermaid** - Diagrammes UML
 
 ## Conception UML
 
@@ -35,38 +32,34 @@ Pour contribuer ou développer cette application, consultez la [documentation of
 
 ```mermaid
 graph TD
-    U([Utilisateur standard]) --> UC1(Consulter météo du jour)
+    U([Utilisateur]) --> UC1(Consulter météo du jour)
     U --> UC2(Rechercher une ville)
     U --> UC3(Voir prévisions 7 jours)
     U --> UC4(Ajouter ville aux favoris)
     U --> UC5(Changer langue malgache/français)
+    U --> UC6(Activer notifications)
     
-    A([Agriculteur]) --> UC6(Consulter météo agricole)
-    A --> UC7(Recevoir alertes pluie)
-    A --> UC8(Voir calendrier cultural)
-    UC6 -->|include| UC2
+    U --> UC7(Consulter météo marine)
+    UC7 -->|inclut si ville côtière| UC2
     
-    P([Pêcheur]) --> UC9(Consulter météo marine)
-    P --> UC10(Voir état de la mer)
-    P --> UC11(Recevoir alertes sortie mer)
-    UC9 -->|include| UC2
+    U --> UC8(Consulter calendrier cultural)
+    UC8 -->|inclut| UC2
     
-    T([Touriste]) --> UC12(Voir météo des plages)
-    T --> UC13(Comparer climats régions)
-    T --> UC14(Planifier itinéraire météo)
+    U --> UC9(Voir alertes cyclone)
+    U --> UC10(Comparer climats régions)
     
-    Admin([Administrateur]) --> UC15(Gérer les sources de données)
-    Admin --> UC16(Émettre alerte cyclone)
-    Admin --> UC17(Modérer signalements)
+    UC1 -.->|données stockées dans| DB[(SQLite locale)]
+    UC3 -.->|cache| DB
+    UC4 -.->|sauvegarde| DB
+    UC9 -.->|alertes reçues via API| DB
     
-    UC16 -.->|déclenche| N([Service de notifications Push])
-    N --> U
-    N --> A
-    N --> P
+    API([API Météo externe]) -.->|fournit données| UC1
+    API -.->|fournit prévisions| UC3
+    API -.->|fournit alertes| UC9
+    API -.->|fournit conditions mer| UC7
 ```
 
 ### 2. Diagramme de Classes
-
 
 ```mermaid
 classDiagram
@@ -79,53 +72,13 @@ classDiagram
         +Int altitude
         +String fuseauHoraire
         +bool estCotiere
-        +getClimatActuel() Prevision
-        +getPrevisions(int jours) List~Prevision~
-    }
-    
-    class Utilisateur {
-        +String id
-        +String pseudo
-        +String email
-        +String languePreferee
-        +bool alertesCycloneActivees
-        +bool alertesPluieActivees
-        +ajouterFavori(Ville v)
-        +supprimerFavori(String villeId)
-        +consulterMeteo(Ville v)
-        +changerLangue(String langue)
-    }
-    
-    Utilisateur <|-- Agriculteur : héritage
-    Utilisateur <|-- Pecheur : héritage
-    Utilisateur <|-- Touriste : héritage
-    
-    class Agriculteur {
-        +String[] typesCultures
-        +String[] regionsSuivies
-        +bool alertePluieActivee
-        +consulterCalendrierCultural() CalendrierCultural
-        +getRecommandationsSemis() List~String~
-    }
-    
-    class Pecheur {
-        +String[] zonesPeche
-        +String typeBateau
-        +bool alerteMerDangereuse
-        +consulterEtatMer(Ville v) ConditionMarine
-        +estSortieAutorisee() bool
-    }
-    
-    class Touriste {
-        +Date dateArrivee
-        +Date dateDepart
-        +String[] lieuxVisites
-        +comparerClimats(Ville[] villes) Map~String,Prevision~
-        +suggererMeilleurePeriode(String region) String
+        +fromMap(Map) Ville
+        +toMap() Map
     }
     
     class Prevision {
         +String id
+        +String villeId
         +DateTime dateHeure
         +Float temperature
         +Float temperatureRessentie
@@ -136,11 +89,15 @@ classDiagram
         +Float probabilitePluie
         +Float indiceUV
         +String icone
-        +traduireCondition(String langue) String
-        +estFavorable(String activite) bool
+        +DateTime dateCreation
+        +estExpiree() bool
+        +fromMap(Map) Prevision
+        +toMap() Map
     }
     
     class ConditionMarine {
+        +String id
+        +String villeId
         +Float hauteurVagues
         +Float temperatureEau
         +String etatMaree
@@ -148,146 +105,136 @@ classDiagram
         +Float houle
         +bool baignadeDangereuse
         +bool pechePossible
-        +getConseilMarin() String
+        +fromMap(Map) ConditionMarine
+        +toMap() Map
+    }
+    
+    class Utilisateur {
+        +String id
+        +String pseudo
+        +String languePreferee
+        +String typeUtilisateur
+        +bool alertesCycloneActivees
+        +bool alertesPluieActivees
+        +fromMap(Map) Utilisateur
+        +toMap() Map
+    }
+    
+    class Favori {
+        +String id
+        +String utilisateurId
+        +String villeId
+        +String surnom
+        +bool notificationsActives
+        +int ordreAffichage
+        +DateTime dateAjout
+        +fromMap(Map) Favori
+        +toMap() Map
     }
     
     class AlerteCyclone {
         +String id
         +String nomCyclone
-        +NiveauAlerte niveau
+        +String niveau
         +DateTime dateEmission
         +DateTime dateFinPrevue
-        +String[] regionsConcernees
-        +String[] consignes
-        +List~PointGPS~ trajectoire
-        +estActive() bool
-        +getRegionsTouchees() List~String~
+        +String consignes
+        +bool estActive
+        +fromMap(Map) AlerteCyclone
+        +toMap() Map
     }
     
-    class NiveauAlerte {
-        <<enumeration>>
-        VERT
-        JAUNE
-        ORANGE
-        ROUGE
-        POST_CYCLONE
+    class AlerteRegion {
+        +String alerteId
+        +String region
+        +fromMap(Map) AlerteRegion
+        +toMap() Map
     }
     
     class CalendrierCultural {
         +String id
         +String region
         +String typeCulture
-        +Mois[] periodeSemis
-        +Mois[] periodeRecolte
-        +String[] conseilsMeteo
-        +estPeriodeSemis(DateTime date) bool
-        +estPeriodeRecolte(DateTime date) bool
+        +int moisSemisDebut
+        +int moisSemisFin
+        +int moisRecolteDebut
+        +int moisRecolteFin
+        +String conseilsMeteo
+        +fromMap(Map) CalendrierCultural
+        +toMap() Map
     }
     
-    class SourceDonnee {
-        +String id
-        +String nom
-        +String type
-        +String urlAPI
-        +Float fiabilite
-        +DateTime derniereMAJ
-        +recupererDonnees(Ville v) List~Prevision~
-        +estDisponible() bool
-    }
-    
-    class Favori {
-        +String id
-        +DateTime dateAjout
-        +String surnom
-        +bool notificationsActives
-        +int ordreAffichage
-        +getPrevisionResume() String
-    }
-    
-    class Notification {
+    class NotificationLocale {
         +String id
         +String titre
         +String message
-        +TypeNotification type
+        +String type
         +DateTime dateEnvoi
         +bool estLue
         +String villeConcernee
+        +fromMap(Map) NotificationLocale
+        +toMap() Map
     }
     
-    class TypeNotification {
-        <<enumeration>>
-        ALERTE_CYCLONE
-        ALERTE_PLUIE
-        METEO_JOURNALIERE
-        CONSEIL_AGRICOLE
-        ALERTE_MER
-    }
-    
-    Ville "1" --> "*" Prevision : possède
+    Ville "1" --> "*" Prevision : stocke
     Ville "1" --> "0..1" ConditionMarine : a si côtière
     Utilisateur "1" --> "*" Favori : possède
-    Utilisateur "1" --> "*" Notification : reçoit
     Favori "*" --> "1" Ville : référence
-    Prevision "*" --> "0..1" ConditionMarine : inclut si applicable
-    AlerteCyclone "*" --> "1..*" Ville : concerne
-    Ville "1" --> "1..*" SourceDonnee : alimentée par
-    CalendrierCultural "*" --> "1" Region : associé à
-    Agriculteur "1" --> "*" CalendrierCultural : consulte
+    AlerteCyclone "1" --> "*" AlerteRegion : concerne
+    Utilisateur "1" --> "*" NotificationLocale : reçoit
 ```
 
 ### 3. Diagramme de Séquence : Alerte Cyclone
 
 ```mermaid
 sequenceDiagram
-    participant Satellite as Détecteur Satellite
-    participant API as API Météo
-    participant System as Système MadaWeather
-    participant Admin as Administrateur
-    participant Push as Service Push
+    participant API as API Météo externe
     participant App as Application Mobile
+    participant DB as SQLite locale
+    participant Push as Notifications locales
     participant User as Utilisateur
     
-    Satellite->>API: detectionDepression(zone, intensite)
-    API->>System: transmettreDonneesBrutes()
-    System->>System: analyserTrajectoire()
-    System->>System: evaluerNiveauRisque()
+    Note over App: L'app interroge l'API toutes les 30 minutes
     
-    alt Risque élevé (niveau Orange/Rouge)
-        System->>Admin: alerteNouveauCyclone(nom, niveau, trajectoire)
-        Admin->>System: confirmerAlerte(consignes, regionsConcernees)
-        System->>System: creerAlerteCyclone()
-        System->>System: genererNotifications()
-        System->>Push: diffuserAlerte(alerte, regions)
-        Push->>App: notificationPush(alerteCyclone)
-        App->>User: afficherNotification()
-        User->>App: ouvrirDetailsAlerte()
-        App->>System: requeteDetailsAlerte(idAlerte)
-        System-->>App: detailsComplets + carteTrajectoire
-        App-->>User: afficherCarteInteractive()
-        User->>App: activerSuiviCyclone()
-        App->>System: enregistrerSuivi(userId, alerteId)
-        System-->>App: confirmationActivation
-    else Risque faible (niveau Vert/Jaune)
-        System->>System: surveillanceContinue()
-        System-->>Admin: rapportSurveillance()
+    App->>API: requeteAlertesActives()
+    API-->>App: listeAlertes
+    
+    loop Pour chaque alerte
+        App->>DB: verifierAlerteExistante(alerteId)
+        
+        alt Nouvelle alerte
+            App->>DB: insererAlerte(alerte)
+            App->>DB: insererRegionsConcernees(alerteId, regions)
+            App->>App: evaluerNiveauRisque()
+            
+            alt Niveau Orange ou Rouge
+                App->>Push: creerNotificationLocale(alerte)
+                Push-->>User: notificationPush
+                User->>App: ouvrirNotification()
+                App->>DB: recupererDetailsAlerte(alerteId)
+                DB-->>App: detailsAlerte + regions
+                App-->>User: afficherDetails + consignes
+            end
+        else Alerte existante mais modifiée
+            App->>DB: mettreAJourAlerte(alerte)
+            App->>DB: mettreAJourRegions(alerteId, regions)
+            
+            alt Changement de niveau
+                App->>Push: creerNotificationMiseAJour()
+                Push-->>User: notificationMiseAJour
+            end
+        end
     end
     
-    loop Toutes les 3 heures
-        API->>System: miseAJourPositionCyclone()
-        System->>System: recalculerTrajectoire()
-        System->>System: mettreAJourAlerte()
-        System->>Push: notificationMiseAJour(alerteId)
-        Push->>App: notification(nouvellePosition)
-        App-->>User: miseAJourCarte()
-    end
+    User->>App: consulterHistoriqueAlertes()
+    App->>DB: recupererToutesAlertes()
+    DB-->>App: listeAlertesStockees
+    App-->>User: afficherHistorique()
     
-    alt Fin du cyclone
-        System->>Admin: propositionFinAlerte()
-        Admin->>System: confirmerFinAlerte()
-        System->>Push: notificationFinAlerte()
-        Push->>App: notificationFin()
-        App-->>User: messageFinAlerte + bilan
-    end
+    User->>App: filtrerParRegion(region)
+    App->>DB: recupererAlertesParRegion(region)
+    DB-->>App: alertesFiltrees
+    App-->>User: afficherAlertesFiltrees()
 ```
 
 ### 4. Diagramme d'États : Cycle de vie d'une Alerte Cyclone
@@ -296,12 +243,12 @@ sequenceDiagram
 stateDiagram-v2
     [*] --> Surveillance
     
-    Surveillance --> DepressionTropicale : Dépression détectée\n(vents < 63 km/h)
+    Surveillance --> DepressionTropicale : Dépression détectée<br/>(vents < 63 km/h)
     
-    DepressionTropicale --> TempeteTropicale : Intensification\n(vents 63-118 km/h)
+    DepressionTropicale --> TempeteTropicale : Intensification<br/>(vents 63-118 km/h)
     DepressionTropicale --> Dissipation : Perte d'intensité
     
-    TempeteTropicale --> CycloneTropical : Intensification\n(vents > 118 km/h)
+    TempeteTropicale --> CycloneTropical : Intensification<br/>(vents > 118 km/h)
     TempeteTropicale --> Dissipation : Perte d'intensité
     
     CycloneTropical --> CycloneIntense : Vents > 166 km/h
@@ -314,10 +261,10 @@ stateDiagram-v2
     AlerteJaune --> AlerteOrange : Intensification
     AlerteJaune --> FinAlerte : Éloignement confirmé
     
-    AlerteOrange --> AlerteRouge : Aggravation\n(impact sous 12h)
+    AlerteOrange --> AlerteRouge : Aggravation<br/>(impact sous 12h)
     AlerteOrange --> AlerteJaune : Amélioration
     
-    AlerteRouge --> PhasePostCyclone : Cyclone passé\n(dégâts à évaluer)
+    AlerteRouge --> PhasePostCyclone : Cyclone passé<br/>(dégâts à évaluer)
     
     PhasePostCyclone --> Bilan : Évaluation complète
     Bilan --> Surveillance : Retour à la normale
@@ -325,10 +272,10 @@ stateDiagram-v2
     Dissipation --> Surveillance
     FinAlerte --> Surveillance
     
-    note right of AlerteJaune : • Information populations\n• Préparation kits urgence
-    note right of AlerteOrange : • Écoles fermées\n• Évacuations préventives\n• Activation BNGRC
-    note right of AlerteRouge : • Confinement total\n• Alerte SMS obligatoire\n• Secours en alerte max
-    note right of PhasePostCyclone : • Activation aide humanitaire\n• Évaluation dégâts\n• Distribution vivres
+    note right of AlerteJaune : • Notification push locale<br/>• Préparation kits urgence
+    note right of AlerteOrange : • Alerte prioritaire<br/>• Évacuations préventives
+    note right of AlerteRouge : • Confinement total<br/>• Notification critique<br/>• Sons et vibration
+    note right of PhasePostCyclone : • Bilan humain et matériel<br/>• Activation aide
 ```
 ### 5. Diagramme de Séquence : Consultation Météo Quotidienne
 
@@ -336,48 +283,72 @@ stateDiagram-v2
 sequenceDiagram
     participant User as Utilisateur
     participant App as Application Mobile
-    participant Cache as Cache Local
-    participant API as API Météo
-    participant DB as Base de Données
+    participant DB as SQLite locale
+    participant API as API Météo externe
     
     User->>App: ouvrirApplication()
     App->>App: detecterLocalisation()
-    App->>Cache: verifierDonneesEnCache(villeId)
+    App->>DB: getVilleParCoordonnees(lat, lon)
+    
+    alt Ville trouvée dans SQLite
+        DB-->>App: ville
+    else Ville non trouvée
+        App->>API: geocoderCoordonnees(lat, lon)
+        API-->>App: nomVille, region
+        App->>DB: insererVille(ville)
+    end
+    
+    App->>DB: getPrevisionActive(villeId)
     
     alt Cache valide (< 30 min)
-        Cache-->>App: donneesCachees
-        App->>App: formaterAffichage()
+        DB-->>App: previsionEnCache
         App-->>User: afficherMeteoActuelle()
-    else Cache expiré ou absent
+    else Cache expiré
         App->>API: requeteMeteoActuelle(lat, lon)
-        API-->>App: donneesMeteoBrutes
-        App->>App: parserDonnees()
-        App->>Cache: mettreEnCache(donnees)
-        App->>DB: sauvegarderHistorique(villeId, donnees)
+        API-->>App: donneesMeteo
+        App->>DB: supprimerVieillesPrevisions(villeId)
+        App->>DB: insererPrevision(prevision)
         App-->>User: afficherMeteoActuelle()
     end
     
-    User->>App: changerVille(recherche)
-    App->>API: rechercherVilles(terme, langue)
-    API-->>App: listeVillesCorrespondantes
-    App-->>User: afficherResultatsRecherche()
+    User->>App: rechercherVille(terme)
+    App->>DB: rechercherVillesSQLite(terme)
+    DB-->>App: villesCorrespondantes
+    App-->>User: afficherResultats()
     
     User->>App: selectionnerVille(villeId)
-    App->>API: requetePrevisions7Jours(villeId, langue)
-    API-->>App: previsions7Jours
-    App->>App: calculerTendances()
-    App-->>User: afficherPrevisionsDetaillees()
+    App->>DB: getPrevisions7Jours(villeId)
     
-    alt Condition marine (ville côtière)
+    alt Prévisions complètes en cache
+        DB-->>App: previsions7Jours
+    else Cache incomplet
+        App->>API: requetePrevisions7Jours(lat, lon)
+        API-->>App: previsions7Jours
+        App->>DB: insererPrevisions(previsions)
+    end
+    
+    App-->>User: afficherPrevisions()
+    
+    alt Ville côtière
         User->>App: consulterOngletMarine()
-        App->>API: requeteConditionsMarines(lat, lon)
-        API-->>App: donneesMarines
-        App->>App: evaluerDangers()
-        App-->>User: afficherEtatMer + conseils
+        App->>DB: getConditionMarine(villeId)
+        alt Cache marine valide
+            DB-->>App: conditionMarine
+        else Cache expiré
+            App->>API: requeteConditionsMarines(lat, lon)
+            API-->>App: donneesMarines
+            App->>DB: insererConditionMarine(condition)
+        end
+        App-->>User: afficherEtatMer()
     end
     
     User->>App: ajouterFavori(villeId, surnom)
-    App->>DB: sauvegarderFavori(userId, villeId, surnom)
-    DB-->>App: confirmationEnregistrement
-    App-->>User: favoriAjouté()
+    App->>DB: insererFavori(favori)
+    DB-->>App: confirmation
+    App-->>User: toast "Ville ajoutée aux favoris"
+    
+    User->>App: voirFavoris()
+    App->>DB: getFavoris(utilisateurId)
+    DB-->>App: listeFavoris
+    App-->>User: afficherFavoris()
 ```
