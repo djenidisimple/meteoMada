@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:meteomada/models/calendrier_cultural.dart';
-import 'package:meteomada/services/database_service.dart';
+import 'package:meteomada/repositories/calendrier_repository.dart';
 
 class CalendrierProvider extends ChangeNotifier {
-  final _db = DatabaseService();
+  final _repo = CalendrierRepository();
 
   List<CalendrierCultural> _donnees = [];
   List<String> _regions = [];
   String? _regionSelectionnee;
+  bool _chargement = false;
 
   List<CalendrierCultural> get donnees => _donnees;
+  bool get chargement => _chargement;
   List<CalendrierCultural> get filtered {
     if (_regionSelectionnee == null) return _donnees;
     return _donnees
@@ -21,7 +23,10 @@ class CalendrierProvider extends ChangeNotifier {
   String? get regionSelectionnee => _regionSelectionnee;
 
   Future<void> initialiser() async {
-    _regions = await _db.getToutesRegions();
+    _chargement = true;
+    notifyListeners();
+    _regions = await _repo.getToutesRegions();
+    _chargement = false;
     notifyListeners();
   }
 
@@ -31,8 +36,11 @@ class CalendrierProvider extends ChangeNotifier {
   }
 
   Future<void> chargerCalendrier(String region) async {
-    _donnees = await _db.getCalendrierParRegion(region);
+    _chargement = true;
+    notifyListeners();
+    _donnees = await _repo.getCalendrierParRegion(region);
     _regionSelectionnee = region;
+    _chargement = false;
     notifyListeners();
   }
 }

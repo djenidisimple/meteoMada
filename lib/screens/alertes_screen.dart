@@ -46,7 +46,7 @@ class AlertesScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text('Alertes cyclones',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -58,7 +58,7 @@ class AlertesScreen extends StatelessWidget {
                                     horizontal: 10, vertical: 5),
                                 decoration: AppTheme.glassCard,
                                 child: Text('Historique',
-                                    style: GoogleFonts.dmSans(
+                                    style: GoogleFonts.poppins(
                                         fontSize: 11,
                                         color: AppTheme.accentBlue)),
                               ),
@@ -77,13 +77,13 @@ class AlertesScreen extends StatelessWidget {
                                   Text('✅', style: TextStyle(fontSize: 48)),
                                   const SizedBox(height: 16),
                                   Text('Aucune alerte active',
-                                      style: GoogleFonts.syne(
+                                      style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700,
                                           color: Colors.white)),
                                   const SizedBox(height: 6),
                                   Text('La saison cyclonique va de novembre à avril',
-                                      style: GoogleFonts.dmSans(
+                                      style: GoogleFonts.poppins(
                                           fontSize: 12,
                                           color: AppTheme.textSecondary)),
                                 ],
@@ -96,7 +96,7 @@ class AlertesScreen extends StatelessWidget {
                           if (historique.isNotEmpty) ...[
                             const SizedBox(height: 20),
                             Text('Historique',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -144,7 +144,7 @@ class AlertesScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('ALERTE CYCLONIQUE',
-                        style: GoogleFonts.dmSans(
+                        style: GoogleFonts.poppins(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -161,11 +161,11 @@ class AlertesScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(a.nomCyclone,
-                    style: GoogleFonts.syne(
+                    style: GoogleFonts.poppins(
                         fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white)),
                 const SizedBox(height: 4),
                 Text(_description,
-                    style: GoogleFonts.dmSans(
+                    style: GoogleFonts.poppins(
                         fontSize: 12, height: 1.7, color: AppTheme.textSecondary)),
                 const SizedBox(height: 12),
                 GridView.count(
@@ -234,7 +234,7 @@ class AlertesScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Consignes de sécurité',
-                            style: GoogleFonts.dmSans(
+                            style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white)),
@@ -282,7 +282,7 @@ class AlertesScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(a.nomCyclone,
-                      style: GoogleFonts.syne(
+                      style: GoogleFonts.poppins(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
@@ -334,7 +334,7 @@ class AlertesScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(valeur,
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.poppins(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),

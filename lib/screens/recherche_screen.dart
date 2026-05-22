@@ -5,7 +5,7 @@ import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/widgets/weather_gradient_bg.dart';
 import 'package:meteomada/widgets/glass_card.dart';
 import 'package:meteomada/models/ville.dart';
-import 'package:meteomada/services/database_service.dart';
+import 'package:meteomada/repositories/ville_repository.dart';
 
 class RechercheScreen extends StatefulWidget {
   const RechercheScreen({super.key});
@@ -15,7 +15,7 @@ class RechercheScreen extends StatefulWidget {
 }
 
 class _RechercheScreenState extends State<RechercheScreen> {
-  final _db = DatabaseService();
+  final _villeRepo = VilleRepository();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   List<Ville> _resultats = [];
@@ -50,7 +50,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
     }
     setState(() => _chargement = true);
     try {
-      final locaux = await _db.rechercherVilles(terme);
+      final locaux = await _villeRepo.rechercherVilles(terme);
       setState(() => _resultats = locaux);
     } catch (_) {
       setState(() => _resultats = []);
@@ -78,7 +78,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
           style: const TextStyle(color: Colors.white, fontSize: 14));
     return RichText(
       text: TextSpan(
-        style: GoogleFonts.dmSans(fontSize: 14, color: Colors.white),
+        style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
         children: [
           TextSpan(text: text.substring(0, idx)),
           TextSpan(
@@ -105,8 +105,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
             onPressed: () => context.pop(),
           ),
         ),
-        body: SafeArea(
-          child: Column(
+        body: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -127,7 +126,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
                           controller: _controller,
                           focusNode: _focusNode,
                           autofocus: true,
-                          style: GoogleFonts.dmSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 15, color: Colors.white),
                           decoration: InputDecoration(
                             hintText: 'Rechercher une ville...',
@@ -157,7 +156,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
                     GestureDetector(
                       onTap: () => context.pop(),
                       child: Text('Annuler',
-                          style: GoogleFonts.dmSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 13, color: AppTheme.textSecondary)),
                     ),
                   ],
@@ -168,7 +167,6 @@ class _RechercheScreenState extends State<RechercheScreen> {
                 child: hasQuery ? _buildResultats() : _buildAccueil(),
               ),
             ],
-          ),
         ),
       ),
     );
@@ -180,7 +178,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
       children: [
         if (_recentes.isNotEmpty) ...[
           Text('Récents',
-              style: GoogleFonts.syne(
+              style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
@@ -210,7 +208,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
           const SizedBox(height: 16),
         ],
         Text('Suggestions',
-            style: GoogleFonts.syne(
+            style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: Colors.white)),
@@ -234,7 +232,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
                             Border.all(color: Colors.white.withOpacity(0.12)),
                       ),
                       child: Text(nom,
-                          style: GoogleFonts.dmSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 12, color: AppTheme.textSecondary)),
                     ),
                   ))
@@ -256,7 +254,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
             const Text('🔍', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
             Text('Aucune ville trouvée',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.poppins(
                     fontSize: 14, color: AppTheme.textSecondary)),
           ],
         ),
@@ -315,7 +313,7 @@ class _RechercheScreenState extends State<RechercheScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text('--°',
-                    style: GoogleFonts.syne(
+                    style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Colors.white)),

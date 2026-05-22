@@ -8,6 +8,7 @@ import 'package:meteomada/widgets/glass_card.dart';
 import 'package:meteomada/widgets/culture_timeline.dart';
 import 'package:meteomada/providers/calendrier_provider.dart';
 import 'package:meteomada/models/calendrier_cultural.dart';
+import 'package:meteomada/widgets/loading_view.dart';
 
 class CalendrierScreen extends StatefulWidget {
   const CalendrierScreen({super.key});
@@ -37,11 +38,14 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Calendrier Cultural',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
         body: Consumer<CalendrierProvider>(
           builder: (_, cp, __) {
+            if (cp.chargement) {
+              return const LoadingView(message: "Chargement du calendrier...");
+            }
             if (cp.regions.isEmpty && cp.donnees.isEmpty) {
               return Center(
                 child: Column(
@@ -50,7 +54,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                     Text('🌾', style: TextStyle(fontSize: 48)),
                     const SizedBox(height: 16),
                     Text('Aucune donnée disponible',
-                        style: GoogleFonts.dmSans(
+                        style: GoogleFonts.poppins(
                             fontSize: 14, color: AppTheme.textSecondary)),
                   ],
                 ),
@@ -63,11 +67,11 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Calendrier Cultural',
-                      style: GoogleFonts.syne(
+                      style: GoogleFonts.poppins(
                           fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white)),
                   const SizedBox(height: 4),
                   Text('Conseils météo par culture · Madagascar',
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 12, color: AppTheme.textSecondary)),
                   const SizedBox(height: 16),
                   if (cp.regions.isNotEmpty)
@@ -88,7 +92,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                                     ? AppTheme.activeCard
                                     : AppTheme.glassCard,
                                 child: Text(r,
-                                    style: GoogleFonts.dmSans(
+                                    style: GoogleFonts.poppins(
                                         fontSize: 12,
                                         color: isActive
                                             ? AppTheme.accentBlue
@@ -105,7 +109,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 40),
                         child: Text('Sélectionnez une région',
-                            style: GoogleFonts.dmSans(
+                            style: GoogleFonts.poppins(
                                 fontSize: 12, color: AppTheme.textSecondary)),
                       ),
                     )
@@ -149,7 +153,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(c.typeCultureLabel,
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: Colors.white)),
@@ -160,7 +164,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                       ? AppTheme.marineCard
                       : AppTheme.watchCard,
                   child: Text(isActive ? 'Saison active' : 'À venir',
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: isActive
@@ -194,7 +198,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(c.conseilsMeteo,
-                          style: GoogleFonts.dmSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 11,
                               height: 1.5,
                               color: AppTheme.textSecondary)),

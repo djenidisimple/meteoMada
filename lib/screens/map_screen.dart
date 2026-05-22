@@ -57,7 +57,7 @@ class MapScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Antananarivo',
-                                    style: GoogleFonts.syne(
+                                    style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white)),
@@ -77,7 +77,7 @@ class MapScreen extends StatelessWidget {
                                     color: AppTheme.accentBlue.withOpacity(0.35), width: 0.5),
                               ),
                               child: Text('Détails',
-                                  style: GoogleFonts.dmSans(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                       color: AppTheme.accentBlue)),
@@ -111,7 +111,7 @@ class MapScreen extends StatelessWidget {
             )
           : AppTheme.glassCard,
       child: Text(label,
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),

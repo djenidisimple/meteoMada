@@ -95,7 +95,7 @@ class ForecastRow extends StatelessWidget {
                             fontSize: 13, color: AppTheme.textSecondary)),
                     const SizedBox(width: 4),
                     Text('${tempMax.toStringAsFixed(0)}°',
-                        style: GoogleFonts.syne(
+                        style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),

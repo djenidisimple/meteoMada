@@ -15,21 +15,20 @@ class PlusScreen extends StatelessWidget {
     return WeatherGradientBg(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
                 Text('Explorer',
-                    style: GoogleFonts.syne(
+                    style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: Colors.white)),
                 const SizedBox(height: 4),
                 Text('Fonctionnalités avancées',
-                    style: GoogleFonts.dmSans(
+                    style: GoogleFonts.poppins(
                         fontSize: 13, color: AppTheme.textSecondary)),
                 const SizedBox(height: 24),
                 Consumer2<AlerteProvider, UtilisateurProvider>(
@@ -107,7 +106,6 @@ class PlusScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
         ),
       ),
     );
@@ -153,7 +151,7 @@ class _MenuCard extends StatelessWidget {
             ),
             const Spacer(),
             Text(title,
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.white)),

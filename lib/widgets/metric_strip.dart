@@ -49,7 +49,7 @@ class MetricStrip extends StatelessWidget {
           Text(emoji, style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 4),
           Text(valeur,
-              style: GoogleFonts.syne(
+              style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),

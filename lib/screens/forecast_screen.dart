@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/widgets/weather_gradient_bg.dart';
 import 'package:meteomada/widgets/forecast_row.dart';
+import 'package:meteomada/providers/weather_provider.dart';
 
 class ForecastScreen extends StatelessWidget {
   final String villeId;
   const ForecastScreen({super.key, required this.villeId});
+
+  String _conditionEmoji(String condition) {
+    if (condition.contains('dégagé')) return '☀️';
+    if (condition.contains('nuageux') || condition.contains('Partiellement')) return '⛅';
+    if (condition.contains('Brumeux')) return '🌫️';
+    if (condition.contains('Pluie') || condition.contains('Bruine')) return '🌧️';
+    if (condition.contains('Averses')) return '🌦️';
+    if (condition.contains('Orage')) return '⛈️';
+    return '☁️';
+  }
+
+  String _jourSemaine(int weekday) {
+    const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    return jours[weekday - 1];
+  }
+
+  String _mois(int m) {
+    const mois = [
+      'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui',
+      'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
+    ];
+    return mois[m - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,35 +47,48 @@ class ForecastScreen extends StatelessWidget {
             onPressed: () => context.pop(),
           ),
           title: Text('Prévisions 7 jours',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white)),
         ),
-        body: ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          itemCount: 7,
-          itemBuilder: (_, i) {
-            final jours = [
-              'Aujourd\'hui', 'Demain', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'
-            ];
-            final dates = [
-              '24 Mai', '25 Mai', '26 Mai', '27 Mai',
-              '28 Mai', '29 Mai', '30 Mai'
-            ];
-            final emojis = [
-              '⛅', '☀️', '🌧️', '⛅', '☀️', '☁️', '🌦️'
-            ];
-            return ForecastRow(
-              jour: jours[i],
-              date: dates[i],
-              emoji: emojis[i],
-              tempMin: 20 + (i * 0.3),
-              tempMax: 28 + (i * 0.7),
-              probabilitePluie: i == 2 ? 75 : i == 6 ? 45 : null,
-              vitesseVent: i == 0 ? 12 : null,
-              indiceUV: i == 1 ? 7 : i == 4 ? 6 : null,
-              isToday: i == 0,
+        body: Consumer<WeatherProvider>(
+          builder: (_, wp, __) {
+            final previsions = wp.previsions7Jours;
+            if (previsions.isEmpty && wp.chargement) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (previsions.isEmpty) {
+              return Center(
+                child: Text('Aucune prévision disponible',
+                    style: GoogleFonts.poppins(
+                        fontSize: 13, color: AppTheme.textSecondary)),
+              );
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              itemCount: previsions.length,
+              itemBuilder: (_, i) {
+                final p = previsions[i];
+                final estAujourdhui = i == 0;
+                final jour = estAujourdhui
+                    ? "Aujourd'hui"
+                    : _jourSemaine(p.dateHeure.weekday);
+                final date =
+                    '${p.dateHeure.day} ${_mois(p.dateHeure.month)}';
+                return ForecastRow(
+                  jour: jour,
+                  date: date,
+                  emoji: _conditionEmoji(p.condition),
+                  tempMin: p.temperature - 3,
+                  tempMax: p.temperature + 3,
+                  probabilitePluie:
+                      p.probabilitePluie > 0 ? p.probabilitePluie : null,
+                  vitesseVent: p.vitesseVent > 0 ? p.vitesseVent : null,
+                  indiceUV: p.indiceUV > 0 ? p.indiceUV : null,
+                  isToday: estAujourdhui,
+                );
+              },
             );
           },
         ),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:meteomada/models/favori.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/models/prevision.dart';
-import 'package:meteomada/services/database_service.dart';
+import 'package:meteomada/repositories/favori_repository.dart';
+import 'package:meteomada/repositories/ville_repository.dart';
+import 'package:meteomada/repositories/prevision_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class FavoriComplet {
@@ -13,27 +15,39 @@ class FavoriComplet {
 }
 
 class FavorisProvider extends ChangeNotifier {
-  final _db = DatabaseService();
+  final _favoriRepo = FavoriRepository();
+  final _villeRepo = VilleRepository();
+  final _previsionRepo = PrevisionRepository();
   final _uuid = const Uuid();
 
   List<FavoriComplet> _favoris = [];
   String? _userId;
+  bool _chargement = false;
 
   List<FavoriComplet> get favoris => _favoris;
+  bool get chargement => _chargement;
 
   Future<void> initialiser(String? userId) async {
     _userId = userId;
-    if (userId == null) return;
-    final list = await _db.getFavoris(userId);
+    if (userId == null) {
+      _favoris = [];
+      _chargement = false;
+      notifyListeners();
+      return;
+    }
+    _chargement = true;
+    notifyListeners();
+    final list = await _favoriRepo.getFavoris(userId);
     final complets = <FavoriComplet>[];
     for (final f in list) {
-      final ville = await _db.getVilleParId(f.villeId);
+      final ville = await _villeRepo.getVilleParId(f.villeId);
       if (ville != null) {
-        final prev = await _db.getPrevisionActive(ville.id);
+        final prev = await _previsionRepo.getDernierePrevision(ville.id);
         complets.add(FavoriComplet(favori: f, ville: ville, prevision: prev));
       }
     }
     _favoris = complets;
+    _chargement = false;
     notifyListeners();
   }
 
@@ -46,12 +60,12 @@ class FavorisProvider extends ChangeNotifier {
       dateAjout: DateTime.now(),
       ordreAffichage: _favoris.length,
     );
-    await _db.ajouterFavori(favori);
+    await _favoriRepo.ajouterFavori(favori);
     await initialiser(_userId);
   }
 
   Future<void> supprimer(String favoriId) async {
-    await _db.supprimerFavori(favoriId);
+    await _favoriRepo.supprimerFavori(favoriId);
     await initialiser(_userId);
   }
 
@@ -59,13 +73,13 @@ class FavorisProvider extends ChangeNotifier {
     if (newIndex > oldIndex) newIndex--;
     final item = _favoris.removeAt(oldIndex);
     _favoris.insert(newIndex, item);
-    await _db.mettreAJourOrdre(_favoris.map((f) => f.favori).toList());
+    await _favoriRepo.reordonner(_favoris.map((f) => f.favori).toList());
     notifyListeners();
   }
 
   Future<bool> estFavori(String villeId) async {
     if (_userId == null) return false;
-    return _db.estFavori(villeId, _userId!);
+    return _favoriRepo.estFavori(villeId, _userId!);
   }
 
   Future<void> basculerNotifications(String favoriId) async {
@@ -73,7 +87,7 @@ class FavorisProvider extends ChangeNotifier {
     if (idx < 0) return;
     final old = _favoris[idx];
     final updated = old.favori.copyWith(notificationsActives: !old.favori.notificationsActives);
-    await _db.mettreAJourFavori(updated);
+    await _favoriRepo.ajouterFavori(updated);
     await initialiser(_userId);
   }
 }

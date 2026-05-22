@@ -7,6 +7,7 @@ import 'package:meteomada/widgets/weather_gradient_bg.dart';
 import 'package:meteomada/widgets/city_favori_card.dart';
 import 'package:meteomada/widgets/custom_switch.dart';
 import 'package:meteomada/providers/favoris_provider.dart';
+import 'package:meteomada/widgets/loading_view.dart';
 
 class FavorisScreen extends StatelessWidget {
   const FavorisScreen({super.key});
@@ -21,10 +22,12 @@ class FavorisScreen extends StatelessWidget {
           backgroundColor: AppTheme.accentBlue,
           child: const Icon(Icons.add_rounded, color: Colors.white),
         ),
-        body: SafeArea(
-          child: Consumer<FavorisProvider>(
+        body: Consumer<FavorisProvider>(
             builder: (context, fp, _) {
               final favoris = fp.favoris;
+              if (fp.chargement) {
+                return const LoadingView(message: "Chargement des favoris...");
+              }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -38,12 +41,12 @@ class FavorisScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Mes Favoris',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 28,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white)),
                             Text('${favoris.length} · Glisser',
-                                style: GoogleFonts.dmSans(
+                                style: GoogleFonts.poppins(
                                     fontSize: 13, color: AppTheme.textSecondary)),
                           ],
                         ),
@@ -71,14 +74,14 @@ class FavorisScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             Text('Aucun favori',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
                             const SizedBox(height: 6),
                             Text('Ajoutez des villes en favori\npour les retrouver rapidement',
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.dmSans(
+                                style: GoogleFonts.poppins(
                                     fontSize: 13,
                                     height: 1.5,
                                     color: AppTheme.textSecondary)),
@@ -97,7 +100,7 @@ class FavorisScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text('🔍 Ajouter une ville',
-                                    style: GoogleFonts.dmSans(
+                                    style: GoogleFonts.poppins(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white)),
@@ -140,7 +143,7 @@ class FavorisScreen extends StatelessWidget {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16)),
                                   title: Text('Retirer des favoris ?',
-                                      style: GoogleFonts.dmSans(
+                                      style: GoogleFonts.poppins(
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white)),
                                   actions: [
@@ -224,7 +227,6 @@ class FavorisScreen extends StatelessWidget {
             },
           ),
         ),
-      ),
     );
   }
 }

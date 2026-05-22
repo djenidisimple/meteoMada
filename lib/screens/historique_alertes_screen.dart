@@ -37,7 +37,7 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Alertes cyclones',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
           actions: [
             Consumer<AlerteProvider>(
@@ -108,14 +108,14 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                   const SizedBox(height: 20),
                   if (actives.isNotEmpty) ...[
                     Text('Active maintenant',
-                        style: GoogleFonts.syne(
+                        style: GoogleFonts.poppins(
                             fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                     const SizedBox(height: 10),
                     ...actives.map((a) => _alerteHistoriqueCard(a, true)),
                     const SizedBox(height: 20),
                   ],
                   Text('Historique',
-                      style: GoogleFonts.syne(
+                      style: GoogleFonts.poppins(
                           fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                   const SizedBox(height: 10),
                   if (historique.isEmpty)
@@ -123,7 +123,7 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 40),
                         child: Text('Aucune alerte passée',
-                            style: GoogleFonts.dmSans(
+                            style: GoogleFonts.poppins(
                                 fontSize: 13, color: AppTheme.textSecondary)),
                       ),
                     )
@@ -153,7 +153,7 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(a.nomCyclone,
-                      style: GoogleFonts.syne(
+                      style: GoogleFonts.poppins(
                           fontSize: estActive ? 14 : 13,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),

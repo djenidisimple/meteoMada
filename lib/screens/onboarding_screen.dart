@@ -73,7 +73,7 @@ class OnboardingScreen extends StatelessWidget {
               child: Text(
                 'Activez votre\nlocalisation',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.syne(
+                style: GoogleFonts.poppins(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
                     color: Colors.white),
@@ -85,7 +85,7 @@ class OnboardingScreen extends StatelessWidget {
               child: Text(
                 'Pour vous offrir les prévisions les plus précises, nous avons besoin de connaître votre position.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.poppins(
                     fontSize: 13,
                     height: 1.7,
                     color: AppTheme.textSecondary),
@@ -122,7 +122,7 @@ class OnboardingScreen extends StatelessWidget {
                       child: Text(
                         '📡 Autoriser la localisation',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
+                        style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: Colors.white),
@@ -143,7 +143,7 @@ class OnboardingScreen extends StatelessWidget {
                       child: Text(
                         'Saisir une ville manuellement',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
+                        style: GoogleFonts.poppins(
                             fontSize: 13,
                             color: AppTheme.textSecondary),
                       ),

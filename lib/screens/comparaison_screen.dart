@@ -40,7 +40,7 @@ class _ComparaisonScreenState extends State<ComparaisonScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Comparaison',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
         body: SingleChildScrollView(
@@ -49,11 +49,11 @@ class _ComparaisonScreenState extends State<ComparaisonScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Climats des régions',
-                  style: GoogleFonts.syne(
+                  style: GoogleFonts.poppins(
                       fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white)),
               const SizedBox(height: 4),
               Text('Aujourd\'hui',
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.poppins(
                       fontSize: 12, color: AppTheme.textSecondary)),
               const SizedBox(height: 16),
               Row(
@@ -71,7 +71,7 @@ class _ComparaisonScreenState extends State<ComparaisonScreen> {
                             : AppTheme.glassCard,
                         child: Text(_metrics[i],
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSans(
+                            style: GoogleFonts.poppins(
                                 fontSize: 11,
                                 fontWeight:
                                     isActive ? FontWeight.w600 : FontWeight.w400,

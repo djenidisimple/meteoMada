@@ -53,7 +53,7 @@ class CityFavoriCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(ville.nom,
-                              style: GoogleFonts.syne(
+                              style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white)),
@@ -83,12 +83,12 @@ class CityFavoriCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(temperature.toStringAsFixed(0),
-                            style: GoogleFonts.syne(
+                            style: GoogleFonts.poppins(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
                         Text('°',
-                            style: GoogleFonts.syne(
+                            style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),

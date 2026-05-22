@@ -9,6 +9,7 @@ import 'package:meteomada/widgets/hourly_card.dart';
 import 'package:meteomada/widgets/forecast_row.dart';
 import 'package:meteomada/providers/weather_provider.dart';
 import 'package:meteomada/providers/alerte_provider.dart';
+import 'package:meteomada/widgets/loading_view.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -44,6 +45,10 @@ class HomeScreen extends StatelessWidget {
           builder: (context, weather, alerte, _) {
             final p = weather.previsionActuelle;
             final ville = weather.villeActuelle;
+
+            if (weather.chargement && p == null) {
+              return const LoadingView(message: "Chargement de la météo...");
+            }
 
             return SafeArea(
               child: RefreshIndicator(
@@ -123,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   p?.temperature.toStringAsFixed(0) ?? '--',
-                                  style: GoogleFonts.syne(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 72,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: -4,
@@ -132,7 +137,7 @@ class HomeScreen extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 12),
                                   child: Text('°C',
-                                      style: GoogleFonts.syne(
+                                      style: GoogleFonts.poppins(
                                           fontSize: 32,
                                           fontWeight: FontWeight.w800,
                                           color: Colors.white)),
@@ -141,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             Text(
                               p?.condition ?? 'Partiellement nuageux',
-                              style: GoogleFonts.dmSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 13,
                                   color: AppTheme.textSecondary,
                                   letterSpacing: 0.05),
@@ -149,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               ville?.nom ?? 'Antananarivo',
-                              style: GoogleFonts.syne(
+                              style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white),
@@ -200,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                                   const SizedBox(width: 6),
                                   Text(
                                     'Voir météo marine',
-                                    style: GoogleFonts.dmSans(
+                                    style: GoogleFonts.poppins(
                                         fontSize: 11,
                                         color: AppTheme.accentGreenLight),
                                   ),
@@ -216,7 +221,7 @@ class HomeScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Prévisions horaires',
-                                style: GoogleFonts.dmSans(
+                                style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white)),
@@ -226,7 +231,7 @@ class HomeScreen extends StatelessWidget {
                                 context.push('/home/hourly/$id');
                               },
                               child: Text('Voir tout',
-                                  style: GoogleFonts.dmSans(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 12,
                                       color: AppTheme.accentBlue)),
                             ),
@@ -267,8 +272,8 @@ class HomeScreen extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Prévisions 5 jours',
-                                style: GoogleFonts.dmSans(
+                            Text('Prévisions 7 jours',
+                                style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white)),
@@ -278,7 +283,7 @@ class HomeScreen extends StatelessWidget {
                                 context.push('/home/forecast/$id');
                               },
                               child: Text('Voir tout',
-                                  style: GoogleFonts.dmSans(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 12,
                                       color: AppTheme.accentBlue)),
                             ),
@@ -286,29 +291,34 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      ...List.generate(5, (i) {
-                        final jours = [
-                          'Aujourd\'hui', 'Demain', 'Mer', 'Jeu', 'Ven'
-                        ];
-                        final dates = [
-                          '24 Mai', '25 Mai', '26 Mai', '27 Mai', '28 Mai'
-                        ];
-                        final emojis = ['⛅', '☀️', '🌧️', '⛅', '☀️'];
+                      ...List.generate(
+                        weather.previsions7Jours.length.clamp(0, 7),
+                        (i) {
+                        final p = weather.previsions7Jours[i];
+                        final estAujourdhui = i == 0;
+                        final jour = estAujourdhui
+                            ? "Aujourd'hui"
+                            : _jourSemaine(p.dateHeure.weekday);
+                        final date =
+                            '${p.dateHeure.day} ${_mois(p.dateHeure.month)}';
                         return GestureDetector(
                           onTap: () {
                             final id = ville?.id ?? 'antananarivo';
                             context.push('/home/forecast/$id');
                           },
                           child: ForecastRow(
-                            jour: jours[i],
-                            date: dates[i],
-                            emoji: emojis[i],
-                            tempMin: 20 + (i * 0.5),
-                            tempMax: 28 + (i * 0.8),
-                            probabilitePluie: i == 2 ? 75 : null,
-                            vitesseVent: i == 0 ? 12 : null,
-                            indiceUV: i == 1 ? 7 : null,
-                            isToday: i == 0,
+                            jour: jour,
+                            date: date,
+                            emoji: _conditionEmoji(p.condition),
+                            tempMin: p.temperature - 3,
+                            tempMax: p.temperature + 3,
+                            probabilitePluie: p.probabilitePluie > 0
+                                ? p.probabilitePluie
+                                : null,
+                            vitesseVent:
+                                p.vitesseVent > 0 ? p.vitesseVent : null,
+                            indiceUV: p.indiceUV > 0 ? p.indiceUV : null,
+                            isToday: estAujourdhui,
                           ),
                         );
                       }),
@@ -344,7 +354,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(ville,
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     color: Colors.white)),
@@ -354,5 +364,18 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _jourSemaine(int weekday) {
+    const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    return jours[weekday - 1];
+  }
+
+  String _mois(int m) {
+    const mois = [
+      'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui',
+      'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
+    ];
+    return mois[m - 1];
   }
 }

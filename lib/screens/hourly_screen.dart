@@ -7,6 +7,7 @@ import 'package:meteomada/widgets/weather_gradient_bg.dart';
 import 'package:meteomada/widgets/temp_chart.dart';
 import 'package:meteomada/widgets/custom_toggle.dart';
 import 'package:meteomada/providers/weather_provider.dart';
+import 'package:meteomada/widgets/loading_view.dart';
 
 class HourlyScreen extends StatefulWidget {
   final String villeId;
@@ -32,7 +33,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Prévisions horaires',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white)),
@@ -40,6 +41,9 @@ class _HourlyScreenState extends State<HourlyScreen> {
         body: Consumer<WeatherProvider>(
           builder: (_, wp, __) {
             final p = wp.previsionActuelle;
+            if (wp.chargement && p == null) {
+              return const LoadingView(message: "Chargement des prévisions...");
+            }
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -52,7 +56,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text('Température',
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.white)),
@@ -86,7 +90,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
                           SizedBox(
                             width: 36,
                             child: Text(heure,
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -105,7 +109,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
                                         : i % 2 == 0
                                             ? 'Ensoleillé'
                                             : 'Nuageux',
-                                    style: GoogleFonts.dmSans(
+                                    style: GoogleFonts.poppins(
                                         fontSize: 13,
                                         color: Colors.white)),
                                 Text('💧 ${50 + i * 5}% · 💨 ${10 + i} km/h',
@@ -116,7 +120,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
                             ),
                           ),
                           Text('${(p?.temperature ?? 27) + (i * 1.5 - 2)}°',
-                              style: GoogleFonts.syne(
+                              style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white)),

@@ -46,13 +46,13 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                   const SizedBox(height: 22),
                   Text('Toerana',
-                      style: GoogleFonts.syne(
+                      style: GoogleFonts.poppins(
                           fontSize: 36,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -1.5,
                           color: Colors.white)),
                   Text('MÉTÉO · MADAGASCAR',
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 11,
                           letterSpacing: 0.18,
                           color: AppTheme.textDim)),
@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     child: Text(
                       "Prévisions précises\npour toute l'île Rouge",
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 13,
                           height: 1.7,
                           color: AppTheme.textSecondary),

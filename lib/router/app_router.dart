@@ -130,10 +130,5 @@ final appRouter = GoRouter(
         villeId: state.pathParameters['villeId']!,
       ),
     ),
-    GoRoute(path: '/recherche', builder: (_, __) => const RechercheScreen()),
-    GoRoute(path: '/alertes', builder: (_, __) => const AlertesScreen()),
-    GoRoute(path: '/calendrier', builder: (_, __) => const CalendrierScreen()),
-    GoRoute(path: '/parametres', builder: (_, __) => const ParametresScreen()),
-    GoRoute(path: '/comparaison', builder: (_, __) => const ComparaisonScreen()),
   ],
 );

@@ -6,6 +6,7 @@ import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/widgets/glass_card.dart';
 import 'package:meteomada/widgets/custom_switch.dart';
 import 'package:meteomada/providers/utilisateur_provider.dart';
+import 'package:meteomada/widgets/loading_view.dart';
 
 class ParametresScreen extends StatelessWidget {
   const ParametresScreen({super.key});
@@ -24,12 +25,15 @@ class ParametresScreen extends StatelessWidget {
             onPressed: () => context.pop(),
           ),
           title: Text('Paramètres',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
         body: Consumer<UtilisateurProvider>(
           builder: (_, up, __) {
             final user = up.utilisateur;
+            if (up.chargement) {
+              return const LoadingView(message: "Chargement des paramètres...");
+            }
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -82,7 +86,7 @@ class ParametresScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(pseudo,
-                  style: GoogleFonts.syne(
+                  style: GoogleFonts.poppins(
                       fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
               const SizedBox(height: 2),
               Container(
@@ -109,7 +113,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Type d\'utilisateur',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           Wrap(
@@ -146,7 +150,7 @@ class ParametresScreen extends StatelessWidget {
                 border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.5),
               ),
         child: Text('$emoji $label',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.poppins(
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 color: isActive ? color : AppTheme.textSecondary)),
@@ -161,7 +165,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Langue',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           Row(
@@ -204,7 +208,7 @@ class ParametresScreen extends StatelessWidget {
               Text(flag, style: const TextStyle(fontSize: 18)),
               const SizedBox(height: 2),
               Text(label,
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.poppins(
                       fontSize: 10,
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                       color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
@@ -222,14 +226,14 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Affichage',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Température',
-                  style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white)),
+                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
               Row(
                 children: [
                   _tempToggle('°C', true),
@@ -244,7 +248,7 @@ class ParametresScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Thème sombre',
-                  style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white)),
+                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
               CustomSwitch(value: true, activeColor: AppTheme.accentBlue, onChanged: () {}),
             ],
           ),
@@ -267,7 +271,7 @@ class ParametresScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
       child: Text(label,
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.poppins(
               fontSize: 12,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
@@ -281,7 +285,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Notifications',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           _notifRow('🌀', 'Alertes cycloniques',
@@ -311,7 +315,7 @@ class ParametresScreen extends StatelessWidget {
             Text(emoji, style: const TextStyle(fontSize: 14)),
             const SizedBox(width: 8),
             Text(label,
-                style: GoogleFonts.dmSans(fontSize: 12, color: Colors.white)),
+                style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
           ],
         ),
         CustomSwitch(value: value, activeColor: color, onChanged: onChanged),
@@ -326,7 +330,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('À propos',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           _infoRow('Source données', 'DGM Madagascar'),
@@ -356,7 +360,7 @@ class ParametresScreen extends StatelessWidget {
               ),
               child: Text('Contacter le support',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.poppins(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.accentBlue)),
@@ -373,7 +377,7 @@ class ParametresScreen extends StatelessWidget {
       children: [
         Text(label, style: TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
         Text(value,
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.poppins(
                 fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white)),
       ],
     );

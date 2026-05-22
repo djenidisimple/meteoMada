@@ -44,7 +44,7 @@ class DetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(wp.villeActuelle?.nom ?? 'Antananarivo',
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.white)),
@@ -89,7 +89,7 @@ class DetailScreen extends StatelessWidget {
                             Text('🌡', style: const TextStyle(fontSize: 20)),
                             const SizedBox(height: 4),
                             Text('${p.temperature.toStringAsFixed(1)}°C',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -109,7 +109,7 @@ class DetailScreen extends StatelessWidget {
                             Text('💧', style: const TextStyle(fontSize: 20)),
                             const SizedBox(height: 4),
                             Text('${p.humidite.toStringAsFixed(0)}%',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -129,7 +129,7 @@ class DetailScreen extends StatelessWidget {
                             Text('💨', style: const TextStyle(fontSize: 20)),
                             const SizedBox(height: 4),
                             Text('${p.vitesseVent.toStringAsFixed(0)} km/h',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -149,7 +149,7 @@ class DetailScreen extends StatelessWidget {
                             Text('🔽', style: const TextStyle(fontSize: 20)),
                             const SizedBox(height: 4),
                             Text('1015 hPa',
-                                style: GoogleFonts.syne(
+                                style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -182,7 +182,7 @@ class DetailScreen extends StatelessWidget {
                               Text('🌅', style: TextStyle(fontSize: 22)),
                               const SizedBox(height: 4),
                               Text('06:15',
-                                  style: GoogleFonts.syne(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white)),
@@ -210,7 +210,7 @@ class DetailScreen extends StatelessWidget {
                               Text('🌇', style: TextStyle(fontSize: 22)),
                               const SizedBox(height: 4),
                               Text('17:30',
-                                  style: GoogleFonts.syne(
+                                  style: GoogleFonts.poppins(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white)),
@@ -235,7 +235,7 @@ class DetailScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Lune gibbeuse décroissante',
-                                style: GoogleFonts.dmSans(
+                                style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white)),
@@ -284,7 +284,7 @@ class DetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(uv.toStringAsFixed(1),
-              style: GoogleFonts.syne(
+              style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
@@ -316,7 +316,7 @@ class DetailScreen extends StatelessWidget {
           Text('🌬', style: const TextStyle(fontSize: 20)),
           const SizedBox(height: 4),
           Text('Bonne',
-              style: GoogleFonts.syne(
+              style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),

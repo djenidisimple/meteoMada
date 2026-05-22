@@ -38,7 +38,7 @@ class RegionCompareBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(nom,
-                        style: GoogleFonts.syne(
+                        style: GoogleFonts.poppins(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
@@ -49,7 +49,7 @@ class RegionCompareBar extends StatelessWidget {
                 ),
               ),
               Text('${valeur.toStringAsFixed(0)}°',
-                  style: GoogleFonts.syne(
+                  style: GoogleFonts.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: _valeurCouleur(valeur, metrique))),

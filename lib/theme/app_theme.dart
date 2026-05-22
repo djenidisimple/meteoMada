@@ -32,14 +32,14 @@ class AppTheme {
 
   // ─── TYPOGRAPHIE ────────────────────────────────────────
   static TextStyle display(BuildContext context) =>
-      GoogleFonts.syne(fontWeight: FontWeight.w800, color: Colors.white);
+      GoogleFonts.poppins(fontWeight: FontWeight.w800, color: Colors.white);
   static TextStyle title(BuildContext context) =>
-      GoogleFonts.syne(fontWeight: FontWeight.w700, color: Colors.white);
+      GoogleFonts.poppins(fontWeight: FontWeight.w700, color: Colors.white);
   static TextStyle body(BuildContext context) =>
-      GoogleFonts.dmSans(fontWeight: FontWeight.w400, color: textSecondary);
+      GoogleFonts.poppins(fontWeight: FontWeight.w400, color: textSecondary);
   static TextStyle label(BuildContext context) =>
-      GoogleFonts.dmSans(fontWeight: FontWeight.w500, color: Colors.white);
-  static TextStyle temp(BuildContext context) => GoogleFonts.syne(
+      GoogleFonts.poppins(fontWeight: FontWeight.w500, color: Colors.white);
+  static TextStyle temp(BuildContext context) => GoogleFonts.poppins(
       fontSize: 72, fontWeight: FontWeight.w800, letterSpacing: -4, color: Colors.white);
 
   static Color get textPrimary => Colors.white;

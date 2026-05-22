@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/models/prevision.dart';
-import 'package:meteomada/services/database_service.dart';
+import 'package:meteomada/repositories/ville_repository.dart';
+import 'package:meteomada/repositories/prevision_repository.dart';
 import 'package:meteomada/services/api_service.dart';
 
 class WeatherProvider extends ChangeNotifier {
-  final _db = DatabaseService();
+  final _villeRepo = VilleRepository();
+  final _previsionRepo = PrevisionRepository();
   final _api = ApiService();
 
   Ville? _villeActuelle;
@@ -22,7 +24,7 @@ class WeatherProvider extends ChangeNotifier {
   String? get erreur => _erreur;
 
   Future<void> initialiser() async {
-    _villeActuelle = await _db.getVilleParId('TNR');
+    _villeActuelle = await _villeRepo.getVilleParId('TNR');
     if (_villeActuelle != null) {
       await chargerMeteo(_villeActuelle!);
     }
@@ -40,19 +42,20 @@ class WeatherProvider extends ChangeNotifier {
 
     try {
       _villeActuelle = ville;
-      final active = await _db.getPrevisionActive(ville.id);
-      if (active != null && !active.estExpiree()) {
-        _previsionActuelle = active;
+      final valide = await _previsionRepo.cacheValide(ville.id);
+      if (valide) {
+        _previsionActuelle = await _previsionRepo.getDernierePrevision(ville.id);
+        _previsions7Jours = await _previsionRepo.getPrevisions7Jours(ville.id);
       } else {
-        await _db.supprimerVieillesPrevisions(ville.id);
+        await _previsionRepo.supprimerVieillesPrevisions(ville.id);
         final actuelle = await _api.requeteMeteoActuelle(ville.latitude, ville.longitude);
         final p7 = await _api.requetePrevisions7Jours(ville.latitude, ville.longitude);
 
         final avecVille = actuelle.copyWith(villeId: ville.id);
         final p7AvecVille = p7.map((p) => p.copyWith(villeId: ville.id)).toList();
 
-        await _db.sauvegarderPrevision(avecVille);
-        await _db.sauvegarderPrevisions(p7AvecVille);
+        await _previsionRepo.insererPrevision(avecVille);
+        await _previsionRepo.insererPrevisions(p7AvecVille);
 
         _previsionActuelle = avecVille;
         _previsions7Jours = p7AvecVille;
@@ -60,8 +63,7 @@ class WeatherProvider extends ChangeNotifier {
       _chargement = false;
       notifyListeners();
     } catch (e) {
-      final active = await _db.getPrevisionActive(ville.id);
-      _previsionActuelle = active;
+      _previsionActuelle = await _previsionRepo.getDernierePrevision(ville.id);
       _chargement = false;
       _erreur = 'Erreur de chargement';
       notifyListeners();
@@ -69,14 +71,14 @@ class WeatherProvider extends ChangeNotifier {
   }
 
   Future<void> chargerPourPosition(double lat, double lon) async {
-    final ville = await _db.getVilleParCoordonnees(lat, lon);
+    final ville = await _villeRepo.getVilleParCoordonnees(lat, lon);
     if (ville != null) {
       await chargerMeteo(ville);
     }
   }
 
   Future<void> chargerPourDefaut() async {
-    _villeActuelle = await _db.getVilleParId('TNR');
+    _villeActuelle = await _villeRepo.getVilleParId('TNR');
     if (_villeActuelle != null) {
       await chargerMeteo(_villeActuelle!);
     }

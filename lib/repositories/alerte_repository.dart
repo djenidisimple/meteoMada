@@ -49,7 +49,22 @@ class AlerteRepository {
       filter: Filter.equals('est_active', 1),
       sortOrders: [SortOrder('date_emission', false)],
     ));
-    return snapshots.map((s) => AlerteCyclone.fromMap(s.value)).toList();
+    final alertes = <AlerteCyclone>[];
+    for (final s in snapshots) {
+      final a = AlerteCyclone.fromMap(s.value);
+      final regions = await getRegionsPourAlerte(a.id);
+      alertes.add(AlerteCyclone(
+        id: a.id,
+        nomCyclone: a.nomCyclone,
+        consignes: a.consignes,
+        niveau: a.niveau,
+        dateEmission: a.dateEmission,
+        dateFinPrevue: a.dateFinPrevue,
+        estActive: a.estActive,
+        regions: regions,
+      ));
+    }
+    return alertes;
   }
 
   Future<List<AlerteCyclone>> getToutesAlertes() async {
@@ -57,7 +72,22 @@ class AlerteRepository {
     final snapshots = await _store.find(db, finder: Finder(
       sortOrders: [SortOrder('date_emission', false)],
     ));
-    return snapshots.map((s) => AlerteCyclone.fromMap(s.value)).toList();
+    final alertes = <AlerteCyclone>[];
+    for (final s in snapshots) {
+      final a = AlerteCyclone.fromMap(s.value);
+      final regions = await getRegionsPourAlerte(a.id);
+      alertes.add(AlerteCyclone(
+        id: a.id,
+        nomCyclone: a.nomCyclone,
+        consignes: a.consignes,
+        niveau: a.niveau,
+        dateEmission: a.dateEmission,
+        dateFinPrevue: a.dateFinPrevue,
+        estActive: a.estActive,
+        regions: regions,
+      ));
+    }
+    return alertes;
   }
 
   Future<List<AlerteCyclone>> getAlertesParRegion(String region) async {
@@ -91,6 +121,17 @@ class AlerteRepository {
     final db = await _dbHelper.database;
     final map = await _store.record(alerteId).get(db);
     if (map == null) return null;
-    return AlerteCyclone.fromMap(map);
+    final a = AlerteCyclone.fromMap(map);
+    final regions = await getRegionsPourAlerte(alerteId);
+    return AlerteCyclone(
+      id: a.id,
+      nomCyclone: a.nomCyclone,
+      consignes: a.consignes,
+      niveau: a.niveau,
+      dateEmission: a.dateEmission,
+      dateFinPrevue: a.dateFinPrevue,
+      estActive: a.estActive,
+      regions: regions,
+    );
   }
 }

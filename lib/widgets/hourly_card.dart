@@ -38,7 +38,7 @@ class HourlyCard extends StatelessWidget {
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(height: 4),
           Text(temp,
-              style: GoogleFonts.syne(
+              style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
