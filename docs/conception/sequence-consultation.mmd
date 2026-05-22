@@ -1,47 +1,71 @@
 sequenceDiagram
     participant User as Utilisateur
     participant App as Application Mobile
-    participant Cache as Cache Local
-    participant API as API Météo
-    participant DB as Base de Données
+    participant DB as SQLite locale
+    participant API as API Météo externe
     
     User->>App: ouvrirApplication()
     App->>App: detecterLocalisation()
-    App->>Cache: verifierDonneesEnCache(villeId)
+    App->>DB: getVilleParCoordonnees(lat, lon)
+    
+    alt Ville trouvée dans SQLite
+        DB-->>App: ville
+    else Ville non trouvée
+        App->>API: geocoderCoordonnees(lat, lon)
+        API-->>App: nomVille, region
+        App->>DB: insererVille(ville)
+    end
+    
+    App->>DB: getPrevisionActive(villeId)
     
     alt Cache valide (< 30 min)
-        Cache-->>App: donneesCachees
-        App->>App: formaterAffichage()
+        DB-->>App: previsionEnCache
         App-->>User: afficherMeteoActuelle()
-    else Cache expiré ou absent
+    else Cache expiré
         App->>API: requeteMeteoActuelle(lat, lon)
-        API-->>App: donneesMeteoBrutes
-        App->>App: parserDonnees()
-        App->>Cache: mettreEnCache(donnees)
-        App->>DB: sauvegarderHistorique(villeId, donnees)
+        API-->>App: donneesMeteo
+        App->>DB: supprimerVieillesPrevisions(villeId)
+        App->>DB: insererPrevision(prevision)
         App-->>User: afficherMeteoActuelle()
     end
     
-    User->>App: changerVille(recherche)
-    App->>API: rechercherVilles(terme, langue)
-    API-->>App: listeVillesCorrespondantes
-    App-->>User: afficherResultatsRecherche()
+    User->>App: rechercherVille(terme)
+    App->>DB: rechercherVillesSQLite(terme)
+    DB-->>App: villesCorrespondantes
+    App-->>User: afficherResultats()
     
     User->>App: selectionnerVille(villeId)
-    App->>API: requetePrevisions7Jours(villeId, langue)
-    API-->>App: previsions7Jours
-    App->>App: calculerTendances()
-    App-->>User: afficherPrevisionsDetaillees()
+    App->>DB: getPrevisions7Jours(villeId)
     
-    alt Condition marine (ville côtière)
+    alt Prévisions complètes en cache
+        DB-->>App: previsions7Jours
+    else Cache incomplet
+        App->>API: requetePrevisions7Jours(lat, lon)
+        API-->>App: previsions7Jours
+        App->>DB: insererPrevisions(previsions)
+    end
+    
+    App-->>User: afficherPrevisions()
+    
+    alt Ville côtière
         User->>App: consulterOngletMarine()
-        App->>API: requeteConditionsMarines(lat, lon)
-        API-->>App: donneesMarines
-        App->>App: evaluerDangers()
-        App-->>User: afficherEtatMer + conseils
+        App->>DB: getConditionMarine(villeId)
+        alt Cache marine valide
+            DB-->>App: conditionMarine
+        else Cache expiré
+            App->>API: requeteConditionsMarines(lat, lon)
+            API-->>App: donneesMarines
+            App->>DB: insererConditionMarine(condition)
+        end
+        App-->>User: afficherEtatMer()
     end
     
     User->>App: ajouterFavori(villeId, surnom)
-    App->>DB: sauvegarderFavori(userId, villeId, surnom)
-    DB-->>App: confirmationEnregistrement
-    App-->>User: favoriAjouté()
+    App->>DB: insererFavori(favori)
+    DB-->>App: confirmation
+    App-->>User: toast "Ville ajoutée aux favoris"
+    
+    User->>App: voirFavoris()
+    App->>DB: getFavoris(utilisateurId)
+    DB-->>App: listeFavoris
+    App-->>User: afficherFavoris()

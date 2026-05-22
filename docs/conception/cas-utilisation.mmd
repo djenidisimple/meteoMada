@@ -1,29 +1,26 @@
 graph TD
-    U([Utilisateur standard]) --> UC1(Consulter météo du jour)
+    U([Utilisateur]) --> UC1(Consulter météo du jour)
     U --> UC2(Rechercher une ville)
     U --> UC3(Voir prévisions 7 jours)
     U --> UC4(Ajouter ville aux favoris)
     U --> UC5(Changer langue malgache/français)
+    U --> UC6(Activer notifications)
     
-    A([Agriculteur]) --> UC6(Consulter météo agricole)
-    A --> UC7(Recevoir alertes pluie)
-    A --> UC8(Voir calendrier cultural)
-    UC6 -->|include| UC2
+    U --> UC7(Consulter météo marine)
+    UC7 -->|inclut si ville côtière| UC2
     
-    P([Pêcheur]) --> UC9(Consulter météo marine)
-    P --> UC10(Voir état de la mer)
-    P --> UC11(Recevoir alertes sortie mer)
-    UC9 -->|include| UC2
+    U --> UC8(Consulter calendrier cultural)
+    UC8 -->|inclut| UC2
     
-    T([Touriste]) --> UC12(Voir météo des plages)
-    T --> UC13(Comparer climats régions)
-    T --> UC14(Planifier itinéraire météo)
+    U --> UC9(Voir alertes cyclone)
+    U --> UC10(Comparer climats régions)
     
-    Admin([Administrateur]) --> UC15(Gérer les sources de données)
-    Admin --> UC16(Émettre alerte cyclone)
-    Admin --> UC17(Modérer signalements)
+    UC1 -.->|données stockées dans| DB[(SQLite locale)]
+    UC3 -.->|cache| DB
+    UC4 -.->|sauvegarde| DB
+    UC9 -.->|alertes reçues via API| DB
     
-    UC16 -.->|déclenche| N([Service de notifications Push])
-    N --> U
-    N --> A
-    N --> P
+    API([API Météo externe]) -.->|fournit données| UC1
+    API -.->|fournit prévisions| UC3
+    API -.->|fournit alertes| UC9
+    API -.->|fournit conditions mer| UC7
