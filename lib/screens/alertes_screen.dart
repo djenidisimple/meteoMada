@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -27,7 +26,7 @@ class AlertesScreen extends StatelessWidget {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppTheme.accentRed.withOpacity(0.05),
+                  color: AppTheme.accentRed.withValues(alpha: 0.05),
                 ),
               ),
             ),
@@ -46,7 +45,7 @@ class AlertesScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text('Alertes cyclones',
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -58,7 +57,7 @@ class AlertesScreen extends StatelessWidget {
                                     horizontal: 10, vertical: 5),
                                 decoration: AppTheme.glassCard,
                                 child: Text('Historique',
-                                    style: GoogleFonts.poppins(
+                                    style: AppTheme.poppins(
                                         fontSize: 11,
                                         color: AppTheme.accentBlue)),
                               ),
@@ -77,13 +76,13 @@ class AlertesScreen extends StatelessWidget {
                                   Text('✅', style: TextStyle(fontSize: 48)),
                                   const SizedBox(height: 16),
                                   Text('Aucune alerte active',
-                                      style: GoogleFonts.poppins(
+                                      style: AppTheme.poppins(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700,
                                           color: Colors.white)),
                                   const SizedBox(height: 6),
                                   Text('La saison cyclonique va de novembre à avril',
-                                      style: GoogleFonts.poppins(
+                                      style: AppTheme.poppins(
                                           fontSize: 12,
                                           color: AppTheme.textSecondary)),
                                 ],
@@ -96,7 +95,7 @@ class AlertesScreen extends StatelessWidget {
                           if (historique.isNotEmpty) ...[
                             const SizedBox(height: 20),
                             Text('Historique',
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -130,10 +129,10 @@ class AlertesScreen extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
               border: Border(
-                bottom: BorderSide(color: color.withOpacity(0.20), width: 0.5),
+                bottom: BorderSide(color: color.withValues(alpha: 0.20), width: 0.5),
               ),
             ),
             child: Row(
@@ -144,7 +143,7 @@ class AlertesScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('ALERTE CYCLONIQUE',
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -161,11 +160,11 @@ class AlertesScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(a.nomCyclone,
-                    style: GoogleFonts.poppins(
+                    style: AppTheme.poppins(
                         fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white)),
                 const SizedBox(height: 4),
                 Text(_description,
-                    style: GoogleFonts.poppins(
+                    style: AppTheme.poppins(
                         fontSize: 12, height: 1.7, color: AppTheme.textSecondary)),
                 const SizedBox(height: 12),
                 GridView.count(
@@ -234,7 +233,7 @@ class AlertesScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Consignes de sécurité',
-                            style: GoogleFonts.poppins(
+                            style: AppTheme.poppins(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white)),
@@ -282,7 +281,7 @@ class AlertesScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(a.nomCyclone,
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),
@@ -323,7 +322,7 @@ class AlertesScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
+        color: Colors.white.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -334,7 +333,7 @@ class AlertesScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(valeur,
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: Colors.white)),

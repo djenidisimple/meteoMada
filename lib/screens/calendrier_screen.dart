@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -38,7 +37,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Calendrier Cultural',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
         body: Consumer<CalendrierProvider>(
@@ -54,7 +53,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                     Text('🌾', style: TextStyle(fontSize: 48)),
                     const SizedBox(height: 16),
                     Text('Aucune donnée disponible',
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 14, color: AppTheme.textSecondary)),
                   ],
                 ),
@@ -67,11 +66,11 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Calendrier Cultural',
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white)),
                   const SizedBox(height: 4),
                   Text('Conseils météo par culture · Madagascar',
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 12, color: AppTheme.textSecondary)),
                   const SizedBox(height: 16),
                   if (cp.regions.isNotEmpty)
@@ -92,7 +91,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                                     ? AppTheme.activeCard
                                     : AppTheme.glassCard,
                                 child: Text(r,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTheme.poppins(
                                         fontSize: 12,
                                         color: isActive
                                             ? AppTheme.accentBlue
@@ -109,7 +108,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 40),
                         child: Text('Sélectionnez une région',
-                            style: GoogleFonts.poppins(
+                            style: AppTheme.poppins(
                                 fontSize: 12, color: AppTheme.textSecondary)),
                       ),
                     )
@@ -143,7 +142,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: AppTheme.accentGreen.withOpacity(0.10),
+                    color: AppTheme.accentGreen.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
@@ -153,7 +152,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(c.typeCultureLabel,
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: Colors.white)),
@@ -164,7 +163,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                       ? AppTheme.marineCard
                       : AppTheme.watchCard,
                   child: Text(isActive ? 'Saison active' : 'À venir',
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: isActive
@@ -186,10 +185,10 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppTheme.accentGreen.withOpacity(0.08),
+                  color: AppTheme.accentGreen.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(9),
                   border: Border.all(
-                      color: AppTheme.accentGreen.withOpacity(0.18), width: 0.5),
+                      color: AppTheme.accentGreen.withValues(alpha: 0.18), width: 0.5),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +197,7 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(c.conseilsMeteo,
-                          style: GoogleFonts.poppins(
+                          style: AppTheme.poppins(
                               fontSize: 11,
                               height: 1.5,
                               color: AppTheme.textSecondary)),

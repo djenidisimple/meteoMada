@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -25,7 +24,7 @@ class ParametresScreen extends StatelessWidget {
             onPressed: () => context.pop(),
           ),
           title: Text('Paramètres',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
         body: Consumer<UtilisateurProvider>(
@@ -65,9 +64,9 @@ class ParametresScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.accentBlue.withOpacity(0.15),
+        color: AppTheme.accentBlue.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.accentBlue.withOpacity(0.35), width: 0.8),
+        border: Border.all(color: AppTheme.accentBlue.withValues(alpha: 0.35), width: 0.8),
       ),
       child: Row(
         children: [
@@ -86,15 +85,15 @@ class ParametresScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(pseudo,
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
               const SizedBox(height: 2),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.20),
+                  color: color.withValues(alpha: 0.20),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: color.withOpacity(0.35), width: 0.5),
+                  border: Border.all(color: color.withValues(alpha: 0.35), width: 0.5),
                 ),
                 child: Text(_typeLabel(type),
                     style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
@@ -113,7 +112,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Type d\'utilisateur',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           Wrap(
@@ -140,17 +139,17 @@ class ParametresScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: isActive
             ? BoxDecoration(
-                color: color.withOpacity(0.20),
+                color: color.withValues(alpha: 0.20),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: color.withOpacity(0.40), width: 0.8),
+                border: Border.all(color: color.withValues(alpha: 0.40), width: 0.8),
               )
             : BoxDecoration(
-                color: Colors.white.withOpacity(0.06),
+                color: Colors.white.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white.withOpacity(0.08), width: 0.5),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 0.5),
               ),
         child: Text('$emoji $label',
-            style: GoogleFonts.poppins(
+            style: AppTheme.poppins(
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 color: isActive ? color : AppTheme.textSecondary)),
@@ -165,7 +164,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Langue',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           Row(
@@ -194,13 +193,13 @@ class ParametresScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: isActive
               ? BoxDecoration(
-                  color: AppTheme.accentBlue.withOpacity(0.20),
+                  color: AppTheme.accentBlue.withValues(alpha: 0.20),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                      color: AppTheme.accentBlue.withOpacity(0.40), width: 0.8),
+                      color: AppTheme.accentBlue.withValues(alpha: 0.40), width: 0.8),
                 )
               : BoxDecoration(
-                  color: Colors.white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(10),
                 ),
           child: Column(
@@ -208,7 +207,7 @@ class ParametresScreen extends StatelessWidget {
               Text(flag, style: const TextStyle(fontSize: 18)),
               const SizedBox(height: 2),
               Text(label,
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 10,
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                       color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
@@ -226,14 +225,14 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Affichage',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Température',
-                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
+                  style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
               Row(
                 children: [
                   _tempToggle('°C', true),
@@ -248,7 +247,7 @@ class ParametresScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Thème sombre',
-                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
+                  style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
               CustomSwitch(value: true, activeColor: AppTheme.accentBlue, onChanged: () {}),
             ],
           ),
@@ -262,16 +261,16 @@ class ParametresScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: isActive
           ? BoxDecoration(
-              color: AppTheme.accentBlue.withOpacity(0.20),
+              color: AppTheme.accentBlue.withValues(alpha: 0.20),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.accentBlue.withOpacity(0.40), width: 0.8),
+              border: Border.all(color: AppTheme.accentBlue.withValues(alpha: 0.40), width: 0.8),
             )
           : BoxDecoration(
-              color: Colors.white.withOpacity(0.06),
+              color: Colors.white.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(8),
             ),
       child: Text(label,
-          style: GoogleFonts.poppins(
+          style: AppTheme.poppins(
               fontSize: 12,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
@@ -285,20 +284,20 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Notifications',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           _notifRow('🌀', 'Alertes cycloniques',
               user?.alertesCycloneActivees ?? true, AppTheme.accentRed, () {
             up.updateAlertesCyclone(!(user?.alertesCycloneActivees ?? true));
           }),
-          Divider(height: 16, color: Colors.white.withOpacity(0.06)),
+          Divider(height: 16, color: Colors.white.withValues(alpha: 0.06)),
           _notifRow('🌧', 'Alertes de pluie',
               user?.alertesPluieActivees ?? false, AppTheme.accentBlue, () {
             up.updateAlertesPluie(!(user?.alertesPluieActivees ?? false));
           }),
           if (user?.typeUtilisateur == 'agriculteur') ...[
-            Divider(height: 16, color: Colors.white.withOpacity(0.06)),
+            Divider(height: 16, color: Colors.white.withValues(alpha: 0.06)),
             _notifRow('🌾', 'Conseils culturaux', true, AppTheme.accentYellow, () {}),
           ],
         ],
@@ -315,7 +314,7 @@ class ParametresScreen extends StatelessWidget {
             Text(emoji, style: const TextStyle(fontSize: 14)),
             const SizedBox(width: 8),
             Text(label,
-                style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
+                style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
           ],
         ),
         CustomSwitch(value: value, activeColor: color, onChanged: onChanged),
@@ -330,7 +329,7 @@ class ParametresScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('À propos',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 10),
           _infoRow('Source données', 'DGM Madagascar'),
@@ -354,13 +353,13 @@ class ParametresScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                color: AppTheme.accentBlue.withOpacity(0.10),
+                color: AppTheme.accentBlue.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppTheme.accentBlue.withOpacity(0.20)),
+                border: Border.all(color: AppTheme.accentBlue.withValues(alpha: 0.20)),
               ),
               child: Text('Contacter le support',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.accentBlue)),
@@ -377,7 +376,7 @@ class ParametresScreen extends StatelessWidget {
       children: [
         Text(label, style: TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
         Text(value,
-            style: GoogleFonts.poppins(
+            style: AppTheme.poppins(
                 fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white)),
       ],
     );

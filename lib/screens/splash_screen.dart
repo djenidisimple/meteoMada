@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
 
@@ -14,9 +13,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      context.go('/home');
-    });
+    _initialiser();
+  }
+
+  Future<void> _initialiser() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (!mounted) return;
+    context.go('/home');
   }
 
   @override
@@ -33,67 +36,48 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 84,
-                    height: 84,
+                    width: 90,
+                    height: 90,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(26),
-                      color: Colors.white.withOpacity(0.09),
+                      color: Colors.white.withValues(alpha: 0.08),
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.18), width: 0.5),
+                          color: Colors.white.withValues(alpha: 0.15), width: 0.5),
                     ),
                     child: const Center(
-                        child: Text('🌤', style: TextStyle(fontSize: 44))),
+                        child: Text('🌤', style: TextStyle(fontSize: 48))),
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 24),
                   Text('Toerana',
-                      style: GoogleFonts.poppins(
-                          fontSize: 36,
+                      style: AppTheme.poppins(
+                          fontSize: 40,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -1.5,
                           color: Colors.white)),
                   Text('MÉTÉO · MADAGASCAR',
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 11,
                           letterSpacing: 0.18,
                           color: AppTheme.textDim)),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: 60,
-                    height: 1,
-                    color: Colors.white.withOpacity(0.12),
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
                   SizedBox(
-                    width: 190,
-                    child: Text(
-                      "Prévisions précises\npour toute l'île Rouge",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          height: 1.7,
-                          color: AppTheme.textSecondary),
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
                     ),
                   ),
-                  const SizedBox(height: 36),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [1.0, 0.4, 0.2].map((o) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 3.5),
-                        width: 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppTheme.accentBlue.withOpacity(o),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                  const SizedBox(height: 12),
+                  Text('Découvrez la météo de toutes les localités',
+                      style: AppTheme.poppins(
+                          fontSize: 12, color: AppTheme.textSecondary)),
                 ],
               ),
             ),
             Positioned(
-              bottom: 22,
+              bottom: 32,
               left: 0,
               right: 0,
               child: Text(
@@ -128,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen> {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: color.withOpacity(opacity),
+          color: color.withValues(alpha: opacity),
         ),
       ),
     );

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/widgets/weather_gradient_bg.dart';
-import 'package:meteomada/widgets/region_compare_bar.dart';
+import 'package:meteomada/repositories/ville_repository.dart';
+import 'package:meteomada/models/ville.dart';
+import 'package:meteomada/models/prevision.dart';
+import 'package:meteomada/repositories/prevision_repository.dart';
 
 class ComparaisonScreen extends StatefulWidget {
   const ComparaisonScreen({super.key});
@@ -14,18 +16,28 @@ class ComparaisonScreen extends StatefulWidget {
 
 class _ComparaisonScreenState extends State<ComparaisonScreen> {
   int _selectedMetric = 0;
+  List<_VilleData> _donnees = [];
+  bool _chargement = true;
 
   final _metrics = ['🌡 Température', '💧 Humidité', '🌧 Pluie'];
 
-  final _villes = [
-    ('Antananarivo', 'Analamanga', 'Partiellement nuageux', 27, 55, 30),
-    ('Toamasina', 'Atsinanana', 'Averses', 31, 88, 75),
-    ('Mahajanga', 'Boeny', 'Ensoleillé', 36, 62, 15),
-    ('Toliara', 'Atsimo-Andrefana', 'Dégagé', 34, 45, 10),
-    ('Antsiranana', 'Diana', 'Nuageux', 33, 72, 40),
-    ('Fianarantsoa', 'Haute Matsiatra', 'Pluie légère', 22, 65, 55),
-    ('Fort Dauphin', 'Anosy', 'Venteux', 24, 78, 60),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _charger();
+  }
+
+  Future<void> _charger() async {
+    final villeRepo = VilleRepository();
+    final prevRepo = PrevisionRepository();
+    final villes = await villeRepo.getAllVilles();
+    final liste = <_VilleData>[];
+    for (final v in villes.take(7)) {
+      final p = await prevRepo.getDernierePrevision(v.id);
+      liste.add(_VilleData(v: v, p: p));
+    }
+    if (mounted) setState(() { _donnees = liste; _chargement = false; });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,118 +52,125 @@ class _ComparaisonScreenState extends State<ComparaisonScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Comparaison',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Climats des régions',
-                  style: GoogleFonts.poppins(
-                      fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white)),
-              const SizedBox(height: 4),
-              Text('Aujourd\'hui',
-                  style: GoogleFonts.poppins(
-                      fontSize: 12, color: AppTheme.textSecondary)),
-              const SizedBox(height: 16),
-              Row(
-                children: List.generate(_metrics.length, (i) {
-                  final isActive = i == _selectedMetric;
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedMetric = i),
-                      child: Container(
-                        margin: EdgeInsets.only(
-                            left: i > 0 ? 4 : 0, right: i < _metrics.length - 1 ? 4 : 0),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        decoration: isActive
-                            ? AppTheme.activeCard
-                            : AppTheme.glassCard,
-                        child: Text(_metrics[i],
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                fontWeight:
-                                    isActive ? FontWeight.w600 : FontWeight.w400,
-                                color: isActive
-                                    ? AppTheme.accentBlue
-                                    : AppTheme.textSecondary)),
-                      ),
-                    ),
-                  );
-                }),
+        body: _chargement
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Climats des régions',
+                        style: AppTheme.poppins(
+                            fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white)),
+                    const SizedBox(height: 4),
+                    Text('Aujourd\'hui',
+                        style: AppTheme.poppins(fontSize: 12, color: AppTheme.textSecondary)),
+                    const SizedBox(height: 16),
+                    _toggleMetrics(),
+                    const SizedBox(height: 16),
+                    ..._donnees.map((d) => _barreRegion(d)),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              ..._buildSortedVilles(),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  List<Widget> _buildSortedVilles() {
-    final metrique = _metrics[_selectedMetric];
-    final key = metrique.contains('Temp') ? 'temp' : metrique.contains('Hum') ? 'hum' : 'pluie';
+  Widget _toggleMetrics() {
+    return Row(
+      children: List.generate(_metrics.length, (i) {
+        final isActive = i == _selectedMetric;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => setState(() => _selectedMetric = i),
+            child: Container(
+              margin: EdgeInsets.only(right: i < _metrics.length - 1 ? 6 : 0),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: isActive
+                  ? BoxDecoration(
+                      color: AppTheme.accentBlue.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: AppTheme.accentBlue.withValues(alpha: 0.30), width: 0.8),
+                    )
+                  : BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+              child: Text(_metrics[i],
+                  textAlign: TextAlign.center,
+                  style: AppTheme.poppins(
+                      fontSize: 11,
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                      color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
+            ),
+          ),
+        );
+      }),
+    );
+  }
 
-    final sorted = List<_VilleData>.from(_villes.map((v) => _VilleData(
-      nom: v.$1,
-      region: v.$2,
-      condition: v.$3,
-      temp: v.$4,
-      hum: v.$5,
-      pluie: v.$6,
-    )));
+  Widget _barreRegion(_VilleData d) {
+    final valeur = _valeur(d);
+    final maxVal = _donnees.fold<double>(0, (m, x) => _valeur(x) > m ? _valeur(x) : m);
+    final ratio = maxVal > 0 ? valeur / maxVal : 0.0;
+    final color = _selectedMetric == 0 ? AppTheme.accentOrange
+        : _selectedMetric == 1 ? AppTheme.accentBlue
+        : AppTheme.accentGreen;
 
-    double maxVal;
-    switch (key) {
-      case 'temp':
-        sorted.sort((a, b) => b.temp.compareTo(a.temp));
-        maxVal = sorted.first.temp.toDouble();
-        break;
-      case 'hum':
-        sorted.sort((a, b) => b.hum.compareTo(a.hum));
-        maxVal = sorted.first.hum.toDouble();
-        break;
-      default:
-        sorted.sort((a, b) => b.pluie.compareTo(a.pluie));
-        maxVal = sorted.first.pluie.toDouble();
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(d.v.nom,
+                  style: AppTheme.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+              Text('${valeur.toStringAsFixed(1)}${_selectedMetric == 0 ? '°C' : _selectedMetric == 1 ? '%' : '%'}',
+                  style: AppTheme.poppins(
+                      fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: ratio.clamp(0.0, 1.0),
+              backgroundColor: Colors.white.withValues(alpha: 0.06),
+              valueColor: AlwaysStoppedAnimation(color),
+              minHeight: 6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _valeur(_VilleData d) {
+    if (d.p == null) return 0;
+    switch (_selectedMetric) {
+      case 0: return d.p!.temperature;
+      case 1: return d.p!.humidite;
+      case 2: return d.p!.probabilitePluie;
+      default: return 0;
     }
-
-    return sorted.map((v) {
-      double valeur;
-      switch (key) {
-        case 'temp': valeur = v.temp.toDouble(); break;
-        case 'hum': valeur = v.hum.toDouble(); break;
-        default: valeur = v.pluie.toDouble();
-      }
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: RegionCompareBar(
-          nom: v.nom,
-          region: v.region,
-          condition: v.condition,
-          valeur: valeur,
-          maxValeur: maxVal,
-          metrique: key,
-        ),
-      );
-    }).toList();
   }
 }
 
 class _VilleData {
-  final String nom, region, condition;
-  final int temp, hum, pluie;
-  _VilleData({
-    required this.nom,
-    required this.region,
-    required this.condition,
-    required this.temp,
-    required this.hum,
-    required this.pluie,
-  });
+  final Ville v;
+  final Prevision? p;
+  _VilleData({required this.v, this.p});
 }

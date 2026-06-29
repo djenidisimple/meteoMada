@@ -31,9 +31,10 @@ class AlerteProvider extends ChangeNotifier {
   }
 
   Future<void> initialiser() async {
-    _chargement = true;
-    notifyListeners();
     try {
+      await _notif.initialiser();
+      _chargement = true;
+      notifyListeners();
       _actives = await _repo.getAlertesActives();
       _historique = (await _repo.getToutesAlertes())
           .where((a) => !a.estActive)

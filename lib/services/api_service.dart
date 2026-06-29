@@ -8,7 +8,6 @@ import 'package:uuid/uuid.dart';
 
 class ApiService {
   static const _baseUrl = 'https://api.open-meteo.com/v1';
-  static const _geoUrl = 'https://geocoding-api.open-meteo.com/v1';
   final _uuid = const Uuid();
   Timer? _pollingTimer;
 
@@ -66,8 +65,46 @@ class ApiService {
     final results = <Prevision>[];
     for (int i = 0; i < times.length; i++) {
       final code = (codes[i] as num).toInt();
+      results.add(Prevision(
+        id: _uuid.v4(),
+        villeId: '',
+        condition: _codeToCondition(code),
+        directionVent: '',
+        icone: _codeToIcon(code),
+        dateHeure: DateTime.parse(times[i] as String),
+        dateCreation: now,
+        temperature: (tempMax[i] as num).toDouble(),
+        temperatureRessentie: (tempMin[i] as num).toDouble(),
+        humidite: 0,
+        vitesseVent: wind != null ? (wind[i] as num).toDouble() : 0,
+        probabilitePluie: precip != null ? (precip[i] as num).toDouble() : 0,
+        indiceUV: uv != null ? (uv[i] as num).toDouble() : 0,
+      ));
+    }
+    return results;
+  }
+
+  Future<List<Prevision>> requetePrevisionsHoraires(double lat, double lon, {int jours = 1}) async {
+    final url = Uri.parse(
+        '$_baseUrl/forecast?latitude=$lat&longitude=$lon&hourly=temperature_2m,relative_humidity_2m,weather_code,precipitation_probability,wind_speed_10m,uv_index&timezone=auto&forecast_days=$jours');
+    final response = await http.get(url);
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final hourly = data['hourly'] as Map<String, dynamic>;
+    final times = hourly['time'] as List<dynamic>;
+    final codes = hourly['weather_code'] as List<dynamic>;
+    final temps = hourly['temperature_2m'] as List<dynamic>;
+    final humidites = hourly['relative_humidity_2m'] as List<dynamic>?;
+    final precip = hourly['precipitation_probability'] as List<dynamic>?;
+    final winds = hourly['wind_speed_10m'] as List<dynamic>?;
+    final uvs = hourly['uv_index'] as List<dynamic>?;
+
+    final now = DateTime.now();
+    final results = <Prevision>[];
+    for (int i = 0; i < times.length; i++) {
       final date = DateTime.parse(times[i] as String);
-      final avgTemp = ((tempMax[i] as num).toDouble() + (tempMin[i] as num).toDouble()) / 2;
+      if (date.isBefore(now.add(const Duration(hours: -1)))) continue;
+      if (results.length >= 24) break;
+      final code = (codes[i] as num).toInt();
       results.add(Prevision(
         id: _uuid.v4(),
         villeId: '',
@@ -76,12 +113,12 @@ class ApiService {
         icone: _codeToIcon(code),
         dateHeure: date,
         dateCreation: now,
-        temperature: avgTemp,
-        temperatureRessentie: avgTemp,
-        humidite: 0,
-        vitesseVent: wind != null ? (wind[i] as num).toDouble() : 0,
+        temperature: (temps[i] as num).toDouble(),
+        temperatureRessentie: (temps[i] as num).toDouble(),
+        humidite: humidites != null ? (humidites[i] as num).toDouble() : 0,
+        vitesseVent: winds != null ? (winds[i] as num).toDouble() : 0,
         probabilitePluie: precip != null ? (precip[i] as num).toDouble() : 0,
-        indiceUV: uv != null ? (uv[i] as num).toDouble() : 0,
+        indiceUV: uvs != null ? (uvs[i] as num).toDouble() : 0,
       ));
     }
     return results;
@@ -103,18 +140,6 @@ class ApiService {
 
   Future<List<AlerteCyclone>> requeteAlertesActives() async {
     return [];
-  }
-
-  Future<String> geocoderCoordonnees(double lat, double lon) async {
-    final url = Uri.parse(
-        '$_geoUrl/reverse?latitude=$lat&longitude=$lon&language=fr');
-    final response = await http.get(url);
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    final results = data['results'] as List<dynamic>?;
-    if (results != null && results.isNotEmpty) {
-      return (results[0] as Map<String, dynamic>)['name'] as String? ?? 'Position';
-    }
-    return 'Position actuelle';
   }
 
   String _codeToCondition(int code) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteomada/theme/app_theme.dart';
 
 class RegionCompareBar extends StatelessWidget {
@@ -38,7 +37,7 @@ class RegionCompareBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(nom,
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
@@ -49,7 +48,7 @@ class RegionCompareBar extends StatelessWidget {
                 ),
               ),
               Text('${valeur.toStringAsFixed(0)}°',
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: _valeurCouleur(valeur, metrique))),
@@ -60,7 +59,7 @@ class RegionCompareBar extends StatelessWidget {
             height: 5,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(3),
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
             ),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,

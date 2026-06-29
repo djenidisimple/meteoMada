@@ -17,6 +17,7 @@ class CultureTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,13 +28,13 @@ class CultureTimeline extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
-            color: Colors.white.withOpacity(0.07),
+            color: Colors.white.withValues(alpha: 0.07),
           ),
           child: Stack(
             children: [
-              _bar(moisSemisDebut, _monthSpan(moisSemisDebut, moisSemisFin),
+              _bar(screenWidth, moisSemisDebut, _monthSpan(moisSemisDebut, moisSemisFin),
                   AppTheme.accentBlue),
-              _bar(moisRecolteDebut,
+              _bar(screenWidth, moisRecolteDebut,
                   _monthSpan(moisRecolteDebut, moisRecolteFin),
                   AppTheme.accentOrange),
             ],
@@ -53,18 +54,18 @@ class CultureTimeline extends StatelessWidget {
     );
   }
 
-  Widget _bar(int startMonth, int span, Color color) {
+  Widget _bar(double screenWidth, int startMonth, int span, Color color) {
     final left = (startMonth - 1) / 12.0;
     final width = span.clamp(0, 12) / 12.0;
     return Positioned(
-      left: left * MediaQueryData().size.width * 0.5,
+      left: left * screenWidth * 0.5,
       top: 1,
       child: Container(
         height: 6,
-        width: (MediaQueryData().size.width * 0.5 - 32) * width,
+        width: (screenWidth * 0.5 - 32) * width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(3),
-          color: color.withOpacity(0.6),
+          color: color.withValues(alpha: 0.6),
         ),
       ),
     );

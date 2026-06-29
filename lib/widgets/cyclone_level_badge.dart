@@ -15,9 +15,9 @@ class CycloneLevelBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.20),
+        color: color.withValues(alpha: 0.20),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.45), width: 0.8),
+        border: Border.all(color: color.withValues(alpha: 0.45), width: 0.8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

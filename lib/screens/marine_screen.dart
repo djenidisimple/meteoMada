@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -50,7 +49,7 @@ class _MarineScreenState extends State<MarineScreen> {
           title: Row(
             children: [
               Text(ville?.nom ?? 'Antananarivo',
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.white)),
@@ -59,7 +58,7 @@ class _MarineScreenState extends State<MarineScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppTheme.accentGreen.withOpacity(0.20),
+                  color: AppTheme.accentGreen.withValues(alpha: 0.20),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text('🏝 Ville côtière',
@@ -104,7 +103,7 @@ class _MarineScreenState extends State<MarineScreen> {
                       decoration: AppTheme.marineCard,
                       child: Text('🌊 Marine',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
+                          style: AppTheme.poppins(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.accentGreenLight)),
@@ -139,14 +138,14 @@ class _MarineScreenState extends State<MarineScreen> {
                                       c?.hauteurVagues
                                               .toStringAsFixed(1) ??
                                           '1.2',
-                                      style: GoogleFonts.poppins(
+                                      style: AppTheme.poppins(
                                           fontSize: 48,
                                           fontWeight: FontWeight.w800,
                                           color: AppTheme.accentGreenLight)),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 10),
                                     child: Text(' m',
-                                        style: GoogleFonts.poppins(
+                                        style: AppTheme.poppins(
                                             fontSize: 22,
                                             color: AppTheme.accentGreenLight)),
                                   ),
@@ -169,7 +168,7 @@ class _MarineScreenState extends State<MarineScreen> {
                                     fontSize: 12,
                                     color: AppTheme.textDim)),
                             Text(c?.ventMarin ?? 'NE',
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -232,7 +231,7 @@ class _MarineScreenState extends State<MarineScreen> {
                               (c?.baignadeDangereuse ?? false)
                                   ? 'Baignade déconseillée'
                                   : 'Baignade OK',
-                              style: GoogleFonts.poppins(
+                              style: AppTheme.poppins(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: (c?.baignadeDangereuse ?? false)
@@ -259,7 +258,7 @@ class _MarineScreenState extends State<MarineScreen> {
                               (c?.pechePossible ?? true)
                                   ? 'Pêche possible'
                                   : 'Pêche déconseillée',
-                              style: GoogleFonts.poppins(
+                              style: AppTheme.poppins(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: (c?.pechePossible ?? true)
@@ -292,7 +291,7 @@ class _MarineScreenState extends State<MarineScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(valeur,
-                  style: GoogleFonts.poppins(
+                  style: AppTheme.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: couleur)),

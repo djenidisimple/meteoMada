@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -29,7 +28,7 @@ class OnboardingScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: AppTheme.accentBlue.withOpacity(0.15)),
+                            color: AppTheme.accentBlue.withValues(alpha: 0.15)),
                       ),
                     ),
                     Container(
@@ -38,7 +37,7 @@ class OnboardingScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: AppTheme.accentBlue.withOpacity(0.20)),
+                            color: AppTheme.accentBlue.withValues(alpha: 0.20)),
                       ),
                     ),
                     Container(
@@ -46,9 +45,9 @@ class OnboardingScreen extends StatelessWidget {
                       height: 90,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppTheme.accentBlue.withOpacity(0.07),
+                        color: AppTheme.accentBlue.withValues(alpha: 0.07),
                         border: Border.all(
-                            color: AppTheme.accentBlue.withOpacity(0.28)),
+                            color: AppTheme.accentBlue.withValues(alpha: 0.28)),
                       ),
                     ),
                     Container(
@@ -56,9 +55,9 @@ class OnboardingScreen extends StatelessWidget {
                       height: 58,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
-                        color: AppTheme.accentBlue.withOpacity(0.14),
+                        color: AppTheme.accentBlue.withValues(alpha: 0.14),
                         border: Border.all(
-                            color: AppTheme.accentBlue.withOpacity(0.30)),
+                            color: AppTheme.accentBlue.withValues(alpha: 0.30)),
                       ),
                       child: const Center(
                           child: Text('📍', style: TextStyle(fontSize: 30))),
@@ -73,7 +72,7 @@ class OnboardingScreen extends StatelessWidget {
               child: Text(
                 'Activez votre\nlocalisation',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: AppTheme.poppins(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
                     color: Colors.white),
@@ -85,7 +84,7 @@ class OnboardingScreen extends StatelessWidget {
               child: Text(
                 'Pour vous offrir les prévisions les plus précises, nous avons besoin de connaître votre position.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: AppTheme.poppins(
                     fontSize: 13,
                     height: 1.7,
                     color: AppTheme.textSecondary),
@@ -103,7 +102,7 @@ class OnboardingScreen extends StatelessWidget {
                       if (granted) {
                         final pos = await loc.obtenirPosition();
                         if (pos != null && context.mounted) {
-                          context.read<WeatherProvider>().chargerPourPosition(
+                          context.read<WeatherProvider>().chargerPourVilleDepuisCoords(
                                 pos['lat']!, pos['lon']!);
                         }
                       }
@@ -122,7 +121,7 @@ class OnboardingScreen extends StatelessWidget {
                       child: Text(
                         '📡 Autoriser la localisation',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: Colors.white),
@@ -136,14 +135,14 @@ class OnboardingScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.14), width: 0.5),
+                          color: Colors.white.withValues(alpha: 0.14), width: 0.5),
                     ),
                     child: InkWell(
                       onTap: () => context.go('/home'),
                       child: Text(
                         'Saisir une ville manuellement',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 13,
                             color: AppTheme.textSecondary),
                       ),
@@ -170,7 +169,7 @@ class OnboardingScreen extends StatelessWidget {
                   height: 4,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(2),
-                    color: Colors.white.withOpacity(0.18),
+                    color: Colors.white.withValues(alpha: 0.18),
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -179,7 +178,7 @@ class OnboardingScreen extends StatelessWidget {
                   height: 4,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(2),
-                    color: Colors.white.withOpacity(0.18),
+                    color: Colors.white.withValues(alpha: 0.18),
                   ),
                 ),
               ],

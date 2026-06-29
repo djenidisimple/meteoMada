@@ -23,7 +23,7 @@ class CustomSwitch extends StatelessWidget {
         height: 22,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(11),
-          color: value ? activeColor : Colors.white.withOpacity(0.14),
+          color: value ? activeColor : Colors.white.withValues(alpha: 0.14),
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 200),
@@ -35,7 +35,7 @@ class CustomSwitch extends StatelessWidget {
             height: 16,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: value ? Colors.white : Colors.white.withOpacity(0.40),
+              color: value ? Colors.white : Colors.white.withValues(alpha: 0.40),
             ),
           ),
         ),

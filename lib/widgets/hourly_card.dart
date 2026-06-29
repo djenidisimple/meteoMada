@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteomada/theme/app_theme.dart';
 
 class HourlyCard extends StatelessWidget {
   final String heure;
-  final String emoji;
+  final IconData icone;
   final String temp;
   final bool isActive;
 
   const HourlyCard({
     super.key,
     required this.heure,
-    required this.emoji,
+    required this.icone,
     required this.temp,
     this.isActive = false,
   });
@@ -35,10 +34,10 @@ class HourlyCard extends StatelessWidget {
                       ? AppTheme.accentBlue
                       : AppTheme.textSecondary)),
           const SizedBox(height: 6),
-          Text(emoji, style: const TextStyle(fontSize: 22)),
+          Icon(icone, size: 22, color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary),
           const SizedBox(height: 4),
           Text(temp,
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteomada/theme/app_theme.dart';
 
 class ForecastRow extends StatelessWidget {
   final String jour;
   final String date;
-  final String emoji;
+  final Widget icone;
   final double tempMin;
   final double tempMax;
   final double? probabilitePluie;
@@ -17,7 +16,7 @@ class ForecastRow extends StatelessWidget {
     super.key,
     required this.jour,
     required this.date,
-    required this.emoji,
+    required this.icone,
     required this.tempMin,
     required this.tempMax,
     this.probabilitePluie,
@@ -57,7 +56,7 @@ class ForecastRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(emoji, style: const TextStyle(fontSize: 20)),
+              SizedBox(width: 28, child: icone),
               const SizedBox(width: 8),
               Expanded(
                 child: Stack(
@@ -66,7 +65,7 @@ class ForecastRow extends StatelessWidget {
                       height: 4,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(2),
-                        color: Colors.white.withOpacity(0.08),
+                        color: Colors.white.withValues(alpha: 0.08),
                       ),
                     ),
                     FractionallySizedBox(
@@ -95,7 +94,7 @@ class ForecastRow extends StatelessWidget {
                             fontSize: 13, color: AppTheme.textSecondary)),
                     const SizedBox(width: 4),
                     Text('${tempMax.toStringAsFixed(0)}°',
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: Colors.white)),
@@ -110,10 +109,11 @@ class ForecastRow extends StatelessWidget {
               child: Row(
                 children: [
                   if (probabilitePluie != null)
-                    _chip('💧 ${probabilitePluie!.toStringAsFixed(0)}%'),
+                    _chip(Icons.water_drop, '${probabilitePluie!.toStringAsFixed(0)}%', AppTheme.accentBlue),
                   if (vitesseVent != null)
-                    _chip('💨 ${vitesseVent!.toStringAsFixed(0)} km/h'),
-                  if (indiceUV != null) _chip('☀️ ${indiceUV!.toStringAsFixed(0)}'),
+                    _chip(Icons.air, '${vitesseVent!.toStringAsFixed(0)} km/h', AppTheme.accentGreen),
+                  if (indiceUV != null)
+                    _chip(Icons.wb_sunny, '${indiceUV!.toStringAsFixed(0)}', AppTheme.accentOrange),
                 ],
               ),
             ),
@@ -122,16 +122,24 @@ class ForecastRow extends StatelessWidget {
     );
   }
 
-  Widget _chip(String text) {
+  Widget _chip(IconData icon, String text, Color color) {
     return Container(
       margin: const EdgeInsets.only(right: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: 0.20)),
       ),
-      child: Text(text,
-          style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: color),
+          const SizedBox(width: 3),
+          Text(text,
+              style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+        ],
+      ),
     );
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:meteomada/theme/app_theme.dart';
-import 'package:meteomada/widgets/weather_gradient_bg.dart';
-import 'package:meteomada/widgets/glass_card.dart';
+import 'package:meteomada/services/geocoding_service.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/repositories/ville_repository.dart';
+import 'package:meteomada/providers/weather_provider.dart';
 
 class RechercheScreen extends StatefulWidget {
   const RechercheScreen({super.key});
@@ -16,19 +16,12 @@ class RechercheScreen extends StatefulWidget {
 
 class _RechercheScreenState extends State<RechercheScreen> {
   final _villeRepo = VilleRepository();
+  final _geo = GeocodingService();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
-  List<Ville> _resultats = [];
-  final List<String> _recentes = [];
+  List<Ville> _locales = [];
+  List<GeocodingResult> _nominatim = [];
   bool _chargement = false;
-
-  static const _suggestions = [
-    'Antananarivo',
-    'Antsiranana',
-    'Fianarantsoa',
-    'Mahajanga',
-    'Nosy Be',
-  ];
 
   @override
   void initState() {
@@ -45,56 +38,45 @@ class _RechercheScreenState extends State<RechercheScreen> {
 
   Future<void> _rechercher(String terme) async {
     if (terme.isEmpty) {
-      setState(() => _resultats = []);
+      setState(() {
+        _locales = [];
+        _nominatim = [];
+      });
       return;
     }
     setState(() => _chargement = true);
     try {
       final locaux = await _villeRepo.rechercherVilles(terme);
-      setState(() => _resultats = locaux);
+      List<GeocodingResult> osm = [];
+      if (locaux.length < 10) {
+        try {
+          osm = await _geo.rechercher(terme);
+        } catch (_) {}
+      }
+      setState(() {
+        _locales = locaux;
+        _nominatim = osm;
+      });
     } catch (_) {
-      setState(() => _resultats = []);
+      setState(() {
+        _locales = [];
+        _nominatim = [];
+      });
     } finally {
       setState(() => _chargement = false);
     }
   }
 
-  void _selectionner(Ville ville) {
-    setState(() {
-      _recentes.remove(ville.nom);
-      _recentes.insert(0, ville.nom);
-      if (_recentes.length > 5) _recentes.removeLast();
-    });
-    context.push('/detail/${ville.id}');
-  }
-
-  Widget _surligner(String text, String query) {
-    if (query.isEmpty)
-      return Text(text,
-          style: const TextStyle(color: Colors.white, fontSize: 14));
-    final idx = text.toLowerCase().indexOf(query.toLowerCase());
-    if (idx < 0)
-      return Text(text,
-          style: const TextStyle(color: Colors.white, fontSize: 14));
-    return RichText(
-      text: TextSpan(
-        style: GoogleFonts.poppins(fontSize: 14, color: Colors.white),
-        children: [
-          TextSpan(text: text.substring(0, idx)),
-          TextSpan(
-            text: text.substring(idx, idx + query.length),
-            style: TextStyle(color: AppTheme.accentBlue),
-          ),
-          TextSpan(text: text.substring(idx + query.length)),
-        ],
-      ),
-    );
+  void _selectionner(Ville ville) async {
+    await context.read<WeatherProvider>().chargerMeteo(ville);
+    if (context.mounted) context.go('/home');
   }
 
   @override
   Widget build(BuildContext context) {
     final hasQuery = _controller.text.isNotEmpty;
-    return WeatherGradientBg(
+    return Container(
+      decoration: const BoxDecoration(gradient: AppTheme.mainGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -105,134 +87,106 @@ class _RechercheScreenState extends State<RechercheScreen> {
             onPressed: () => context.pop(),
           ),
         ),
-        body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.07),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: hasQuery
-                                ? AppTheme.accentBlue.withOpacity(0.5)
-                                : Colors.white.withOpacity(0.10),
-                          ),
-                        ),
-                        child: TextField(
-                          controller: _controller,
-                          focusNode: _focusNode,
-                          autofocus: true,
-                          style: GoogleFonts.poppins(
-                              fontSize: 15, color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Rechercher une ville...',
-                            hintStyle: TextStyle(
-                                color: AppTheme.textSecondary, fontSize: 15),
-                            prefixIcon: Icon(Icons.search_rounded,
-                                color: AppTheme.accentBlue, size: 22),
-                            suffixIcon: _controller.text.isNotEmpty
-                                ? IconButton(
-                                    icon: Icon(Icons.close_rounded,
-                                        color: AppTheme.textSecondary,
-                                        size: 20),
-                                    onPressed: () {
-                                      _controller.clear();
-                                      _focusNode.requestFocus();
-                                    },
-                                  )
-                                : null,
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
-                          ),
-                        ),
+        body: Column(children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: hasQuery
+                            ? AppTheme.accentBlue.withValues(alpha: 0.5)
+                            : Colors.white.withValues(alpha: 0.10),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => context.pop(),
-                      child: Text('Annuler',
-                          style: GoogleFonts.poppins(
-                              fontSize: 13, color: AppTheme.textSecondary)),
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      autofocus: true,
+                      style: AppTheme.poppins(fontSize: 15, color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Village, ville, district...',
+                        hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 15),
+                        prefixIcon: Icon(Icons.search_rounded,
+                            color: AppTheme.accentBlue, size: 22),
+                        suffixIcon: _controller.text.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(Icons.close_rounded,
+                                    color: AppTheme.textSecondary, size: 20),
+                                onPressed: () {
+                                  _controller.clear();
+                                  _focusNode.requestFocus();
+                                },
+                              )
+                            : null,
+                        border: InputBorder.none,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: hasQuery ? _buildResultats() : _buildAccueil(),
-              ),
-            ],
-        ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Text('Annuler',
+                      style: AppTheme.poppins(
+                          fontSize: 13, color: AppTheme.textSecondary)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: hasQuery ? _buildResultats() : _buildAccueil(),
+          ),
+        ]),
       ),
     );
   }
 
   Widget _buildAccueil() {
+    final suggestions = [
+      'Antananarivo', 'Toamasina', 'Antsiranana', 'Fianarantsoa',
+      'Toliara', 'Nosy Be', 'Morondava', 'Ambatondrazaka',
+    ];
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
-        if (_recentes.isNotEmpty) ...[
-          Text('Récents',
-              style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white)),
-          const SizedBox(height: 8),
-          ..._recentes.map((nom) => Container(
-                margin: const EdgeInsets.only(bottom: 6),
-                child: GlassCard(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  onTap: () => _rechercher(nom),
-                  child: Row(
-                    children: [
-                      Icon(Icons.history_rounded,
-                          size: 18, color: AppTheme.textDim),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(nom,
-                            style: TextStyle(
-                                fontSize: 13, color: AppTheme.textSecondary)),
-                      ),
-                      Icon(Icons.chevron_right_rounded,
-                          size: 18, color: AppTheme.textDim),
-                    ],
-                  ),
-                ),
-              )),
-          const SizedBox(height: 16),
-        ],
+        Text('Toutes les localités de Madagascar',
+            style: AppTheme.poppins(
+                fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+        const SizedBox(height: 8),
+        Text('Recherchez un village, une ville ou un district',
+            style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+        const SizedBox(height: 16),
         Text('Suggestions',
-            style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Colors.white)),
+            style: AppTheme.poppins(
+                fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: _suggestions
+          children: suggestions
               .map((nom) => GestureDetector(
                     onTap: () {
                       _controller.text = nom;
                       _rechercher(nom);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 7),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.07),
+                        color: Colors.white.withValues(alpha: 0.07),
                         borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: Colors.white.withOpacity(0.12)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
                       ),
                       child: Text(nom,
-                          style: GoogleFonts.poppins(
+                          style: AppTheme.poppins(
                               fontSize: 12, color: AppTheme.textSecondary)),
                     ),
                   ))
@@ -246,82 +200,131 @@ class _RechercheScreenState extends State<RechercheScreen> {
     if (_chargement) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_resultats.isEmpty) {
+
+    final tous = <dynamic>[..._locales, ..._nominatim];
+    if (tous.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('🔍', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
-            Text('Aucune ville trouvée',
-                style: GoogleFonts.poppins(
+            Text('Aucun lieu trouvé à Madagascar',
+                style: AppTheme.poppins(
                     fontSize: 14, color: AppTheme.textSecondary)),
+            const SizedBox(height: 4),
+            Text('Essayez un autre nom de localité',
+                style: TextStyle(fontSize: 11, color: AppTheme.textDim)),
           ],
         ),
       );
     }
-    return ListView.builder(
+
+    return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: _resultats.length,
-      itemBuilder: (_, i) {
-        final ville = _resultats[i];
-        final isFirst = i == 0;
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: GlassCard(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            onTap: () => _selectionner(ville),
-            decoration: isFirst ? AppTheme.activeCard : null,
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: ville.estCotiere
-                        ? AppTheme.accentGreen.withOpacity(0.12)
-                        : AppTheme.accentBlue.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(ville.estCotiere ? '🌊' : '📍',
-                        style: const TextStyle(fontSize: 18)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _surligner(ville.nom, _controller.text),
-                      if (ville.estCotiere)
-                        Container(
-                          margin: const EdgeInsets.only(top: 2),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: AppTheme.accentGreen.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text('🌊 Côtière',
-                              style: TextStyle(
-                                  fontSize: 9,
-                                  color: AppTheme.accentGreenLight)),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text('--°',
-                    style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white)),
-              ],
-            ),
-          ),
-        );
-      },
+      children: [
+        if (_locales.isNotEmpty) ...[
+          Text('Villes principales',
+              style: AppTheme.poppins(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.accentBlueLight)),
+          const SizedBox(height: 6),
+          ..._locales.map((ville) => _carte(
+                nom: ville.nom,
+                sousTitre: ville.region,
+                icone: Icons.location_city,
+                couleur: AppTheme.accentBlue,
+                onTap: () => _selectionner(ville),
+              )),
+          const SizedBox(height: 10),
+        ],
+        if (_nominatim.isNotEmpty) ...[
+          Text('Autres localités',
+              style: AppTheme.poppins(
+                  fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.accentGreenLight)),
+          const SizedBox(height: 6),
+          ..._nominatim.map((r) {
+            final v = _geo.geocodingToVille(r);
+            return _carte(
+              nom: r.nom.split(',').first.trim(),
+              sousTitre: r.region ?? r.type,
+              icone: _typeIcone(r.type),
+              couleur: AppTheme.accentGreen,
+              onTap: () {
+                _villeRepo.insererVille(v);
+                _selectionner(v);
+              },
+            );
+          }),
+        ],
+      ],
     );
+  }
+
+  Widget _carte({
+    required String nom,
+    required String sousTitre,
+    required IconData icone,
+    required Color couleur,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: couleur.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icone, size: 18, color: couleur),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(nom,
+                      style: AppTheme.poppins(
+                          fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
+                  Text(sousTitre,
+                      style: TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, size: 18, color: AppTheme.textDim),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _typeIcone(String type) {
+    switch (type) {
+      case 'city':
+      case 'town':
+        return Icons.location_city;
+      case 'village':
+        return Icons.house;
+      case 'hamlet':
+        return Icons.home;
+      case 'island':
+        return Icons.public;
+      case 'mountain':
+      case 'peak':
+        return Icons.terrain;
+      case 'river':
+        return Icons.water;
+      default:
+        return Icons.place;
+    }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -37,7 +36,7 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
             onPressed: () => context.pop(),
           ),
           title: Text('Alertes cyclones',
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
           actions: [
             Consumer<AlerteProvider>(
@@ -48,9 +47,9 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: AppTheme.accentRed.withOpacity(0.20),
+                      color: AppTheme.accentRed.withValues(alpha: 0.20),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.accentRed.withOpacity(0.35)),
+                      border: Border.all(color: AppTheme.accentRed.withValues(alpha: 0.35)),
                     ),
                     child: Text('${ap.countActives} active(s)',
                         style: TextStyle(
@@ -90,9 +89,9 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                               decoration: isActive
                                   ? BoxDecoration(
-                                      color: Colors.white.withOpacity(0.12),
+                                      color: Colors.white.withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.white.withOpacity(0.20)),
+                                      border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
                                     )
                                   : AppTheme.glassCard,
                               child: Text(r,
@@ -108,14 +107,14 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                   const SizedBox(height: 20),
                   if (actives.isNotEmpty) ...[
                     Text('Active maintenant',
-                        style: GoogleFonts.poppins(
+                        style: AppTheme.poppins(
                             fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                     const SizedBox(height: 10),
                     ...actives.map((a) => _alerteHistoriqueCard(a, true)),
                     const SizedBox(height: 20),
                   ],
                   Text('Historique',
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
                   const SizedBox(height: 10),
                   if (historique.isEmpty)
@@ -123,7 +122,7 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 40),
                         child: Text('Aucune alerte passée',
-                            style: GoogleFonts.poppins(
+                            style: AppTheme.poppins(
                                 fontSize: 13, color: AppTheme.textSecondary)),
                       ),
                     )
@@ -153,7 +152,7 @@ class _HistoriqueAlertesScreenState extends State<HistoriqueAlertesScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(a.nomCyclone,
-                      style: GoogleFonts.poppins(
+                      style: AppTheme.poppins(
                           fontSize: estActive ? 14 : 13,
                           fontWeight: FontWeight.w700,
                           color: Colors.white)),

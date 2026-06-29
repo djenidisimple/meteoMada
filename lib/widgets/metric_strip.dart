@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/widgets/glass_card.dart';
 
@@ -25,16 +24,17 @@ class MetricStrip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         child: Row(
           children: [
-            _metric(
-                context, '💧', '${humidite.toStringAsFixed(0)}%', 'Humidité'),
+            _metric(context, Icons.water_drop, '${humidite.toStringAsFixed(0)}%', 'Humidité',
+                AppTheme.accentBlue),
             _divider(),
-            _metric(context, '💨', '${vitesseVent.toStringAsFixed(0)} km/h',
-                'Vent'),
+            _metric(context, Icons.air, '${vitesseVent.toStringAsFixed(0)} km/h', 'Vent',
+                AppTheme.accentGreen),
             _divider(),
-            _metric(context, '👁️', '${visibilite.toStringAsFixed(0)} km',
-                'Visibilité'),
+            _metric(context, Icons.visibility, '${visibilite.toStringAsFixed(0)} km', 'Visibilité',
+                AppTheme.accentYellow),
             _divider(),
-            _metric(context, '☀️', indiceUV.toStringAsFixed(0), 'UV'),
+            _metric(context, Icons.wb_sunny, indiceUV.toStringAsFixed(0), 'UV',
+                AppTheme.accentOrange),
           ],
         ),
       ),
@@ -42,14 +42,14 @@ class MetricStrip extends StatelessWidget {
   }
 
   Widget _metric(
-      BuildContext context, String emoji, String valeur, String label) {
+      BuildContext context, IconData icon, String valeur, String label, Color color) {
     return Expanded(
       child: Column(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
+          Icon(icon, size: 18, color: color),
           const SizedBox(height: 4),
           Text(valeur,
-              style: GoogleFonts.poppins(
+              style: AppTheme.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
@@ -67,7 +67,7 @@ class MetricStrip extends StatelessWidget {
     return Container(
       width: 0.5,
       height: 28,
-      color: Colors.white.withOpacity(0.08),
+      color: Colors.white.withValues(alpha: 0.08),
     );
   }
 }

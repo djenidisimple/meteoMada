@@ -13,17 +13,26 @@ class UtilisateurProvider extends ChangeNotifier {
   String get userId => _utilisateur?.id ?? 'default_user';
 
   Future<void> initialiser() async {
-    _chargement = true;
-    notifyListeners();
-    _utilisateur = await _repo.getUtilisateurParDefaut();
-    if (_utilisateur == null) {
+    try {
+      _chargement = true;
+      notifyListeners();
+      _utilisateur = await _repo.getUtilisateurParDefaut();
+      if (_utilisateur == null) {
+        _utilisateur = Utilisateur(
+          id: 'default_user',
+          pseudo: 'Utilisateur',
+          languePreferee: 'fr',
+          typeUtilisateur: 'citoyen',
+        );
+        await _repo.insererOuMAJ(_utilisateur!);
+      }
+    } catch (_) {
       _utilisateur = Utilisateur(
         id: 'default_user',
         pseudo: 'Utilisateur',
         languePreferee: 'fr',
         typeUtilisateur: 'citoyen',
       );
-      await _repo.insererOuMAJ(_utilisateur!);
     }
     _chargement = false;
     notifyListeners();

@@ -9,10 +9,59 @@ import 'package:meteomada/providers/calendrier_provider.dart';
 import 'package:meteomada/providers/utilisateur_provider.dart';
 import 'package:meteomada/providers/marine_provider.dart';
 import 'package:meteomada/l10n/app_localizations.dart';
+import 'package:meteomada/database/database_helper.dart';
+import 'package:meteomada/services/notification_service.dart';
+import 'package:meteomada/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await DatabaseHelper().database;
+    await NotificationService().initialiser();
+  } catch (_) {
+    runApp(_ErrorApp());
+    return;
+  }
   runApp(const ToeranaApp());
+}
+
+class _ErrorApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      home: Scaffold(
+        backgroundColor: AppTheme.backgroundDark,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('⚠️', style: TextStyle(fontSize: 48)),
+                const SizedBox(height: 16),
+                Text(
+                  'Erreur au démarrage',
+                  style: AppTheme.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Veuillez redémarrer l\'application.',
+                  style: AppTheme.poppins(
+                      fontSize: 13, color: AppTheme.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class ToeranaApp extends StatelessWidget {
@@ -36,9 +85,14 @@ class ToeranaApp extends StatelessWidget {
         builder: (context, up, _) {
           Locale locale;
           switch (up.utilisateur?.languePreferee) {
-            case 'en': locale = const Locale('en'); break;
-            case 'mg': locale = const Locale('mg'); break;
-            default: locale = const Locale('fr');
+            case 'en':
+              locale = const Locale('en');
+              break;
+            case 'mg':
+              locale = const Locale('mg');
+              break;
+            default:
+              locale = const Locale('fr');
           }
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,

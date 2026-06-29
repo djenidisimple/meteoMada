@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // ─── PALETTE ────────────────────────────────────────────
@@ -31,22 +30,24 @@ class AppTheme {
   static const Color postCycloneColor = Color(0xFF6EE5C0);
 
   // ─── TYPOGRAPHIE ────────────────────────────────────────
+  static const String _fontFamily = 'Poppins';
+
   static TextStyle display(BuildContext context) =>
-      GoogleFonts.poppins(fontWeight: FontWeight.w800, color: Colors.white);
+      TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.w800, color: Colors.white);
   static TextStyle title(BuildContext context) =>
-      GoogleFonts.poppins(fontWeight: FontWeight.w700, color: Colors.white);
+      TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.w700, color: Colors.white);
   static TextStyle body(BuildContext context) =>
-      GoogleFonts.poppins(fontWeight: FontWeight.w400, color: textSecondary);
+      TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.w400, color: textSecondary);
   static TextStyle label(BuildContext context) =>
-      GoogleFonts.poppins(fontWeight: FontWeight.w500, color: Colors.white);
-  static TextStyle temp(BuildContext context) => GoogleFonts.poppins(
-      fontSize: 72, fontWeight: FontWeight.w800, letterSpacing: -4, color: Colors.white);
+      TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.w500, color: Colors.white);
+  static TextStyle temp(BuildContext context) => TextStyle(
+      fontFamily: _fontFamily, fontSize: 72, fontWeight: FontWeight.w800, letterSpacing: -4, color: Colors.white);
 
   static Color get textPrimary => Colors.white;
-  static Color get textSecondary => Colors.white.withOpacity(0.55);
-  static Color get textDim => Colors.white.withOpacity(0.30);
-  static Color get cardBg => Colors.white.withOpacity(0.07);
-  static Color get cardBorder => Colors.white.withOpacity(0.12);
+  static Color get textSecondary => Colors.white.withValues(alpha: 0.55);
+  static Color get textDim => Colors.white.withValues(alpha: 0.30);
+  static Color get cardBg => Colors.white.withValues(alpha: 0.07);
+  static Color get cardBorder => Colors.white.withValues(alpha: 0.12);
 
   // ─── DÉCORATIONS ────────────────────────────────────────
   static BoxDecoration get glassCard => BoxDecoration(
@@ -56,33 +57,33 @@ class AppTheme {
       );
 
   static BoxDecoration get activeCard => BoxDecoration(
-        color: accentBlue.withOpacity(0.15),
+        color: accentBlue.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accentBlue.withOpacity(0.35), width: 0.8),
+        border: Border.all(color: accentBlue.withValues(alpha: 0.35), width: 0.8),
       );
 
   static BoxDecoration get marineCard => BoxDecoration(
-        color: accentGreen.withOpacity(0.10),
+        color: accentGreen.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accentGreen.withOpacity(0.28), width: 0.8),
+        border: Border.all(color: accentGreen.withValues(alpha: 0.28), width: 0.8),
       );
 
   static BoxDecoration get dangerCard => BoxDecoration(
-        color: accentRed.withOpacity(0.10),
+        color: accentRed.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: accentRed.withOpacity(0.35), width: 0.8),
+        border: Border.all(color: accentRed.withValues(alpha: 0.35), width: 0.8),
       );
 
   static BoxDecoration get warningCard => BoxDecoration(
-        color: accentOrange.withOpacity(0.10),
+        color: accentOrange.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: accentOrange.withOpacity(0.28), width: 0.5),
+        border: Border.all(color: accentOrange.withValues(alpha: 0.28), width: 0.5),
       );
 
   static BoxDecoration get watchCard => BoxDecoration(
-        color: accentYellow.withOpacity(0.10),
+        color: accentYellow.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: accentYellow.withOpacity(0.28), width: 0.5),
+        border: Border.all(color: accentYellow.withValues(alpha: 0.28), width: 0.5),
       );
 
   static const Gradient mainGradient = LinearGradient(
@@ -98,6 +99,30 @@ class AppTheme {
     stops: [0.0, 0.40, 0.65, 1.0],
     colors: [Color(0xFF051830), Color(0xFF0A3055), Color(0xFF0A4A6A), Color(0xFF065C68)],
   );
+
+  // ─── POLICE HELPER ─────────────────────────────────────
+  static TextStyle poppins({
+    double? fontSize,
+    FontWeight? fontWeight,
+    Color? color,
+    double? letterSpacing,
+    double? height,
+    TextDecoration? decoration,
+    FontStyle? fontStyle,
+    TextOverflow? overflow,
+  }) {
+    return TextStyle(
+      fontFamily: _fontFamily,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      letterSpacing: letterSpacing,
+      height: height,
+      decoration: decoration,
+      fontStyle: fontStyle,
+      overflow: overflow,
+    );
+  }
 
   // ─── STATIC HELPERS ──────────────────────────────────────
   static Color colorForNiveau(String niveau) {

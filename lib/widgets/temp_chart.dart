@@ -88,7 +88,7 @@ class _TempChartPainter extends CustomPainter {
       if (i == maxIdx) {
         canvas.drawCircle(pointsOffset[i], 4, Paint()..color = AppTheme.accentBlue);
         canvas.drawCircle(pointsOffset[i], 6, Paint()
-          ..color = AppTheme.accentBlue.withOpacity(0.3));
+          ..color = AppTheme.accentBlue.withValues(alpha: 0.3));
       }
     }
   }

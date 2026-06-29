@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/models/favori.dart';
@@ -36,7 +35,7 @@ class CityFavoriCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: gradient[1].withOpacity(0.4),
+          color: gradient[1].withValues(alpha: 0.4),
           width: 0.8,
         ),
       ),
@@ -53,7 +52,7 @@ class CityFavoriCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(ville.nom,
-                              style: GoogleFonts.poppins(
+                              style: AppTheme.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white)),
@@ -83,12 +82,12 @@ class CityFavoriCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(temperature.toStringAsFixed(0),
-                            style: GoogleFonts.poppins(
+                            style: AppTheme.poppins(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
                         Text('°',
-                            style: GoogleFonts.poppins(
+                            style: AppTheme.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
@@ -106,7 +105,7 @@ class CityFavoriCard extends StatelessWidget {
               margin: const EdgeInsets.only(top: 8),
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.15),
+                color: Colors.black.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -137,9 +136,9 @@ class CityFavoriCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.20),
+        color: color.withValues(alpha: 0.20),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.30), width: 0.5),
+        border: Border.all(color: color.withValues(alpha: 0.30), width: 0.5),
       ),
       child: Text(text,
           style: TextStyle(
@@ -158,7 +157,7 @@ class CityFavoriCard extends StatelessWidget {
       case 'TMM':
         return [const Color(0xFF1A2E4B), const Color(0xFF2A4A7A)];
       default:
-        return [AppTheme.backgroundCard, AppTheme.accentBlue.withOpacity(0.4)];
+        return [AppTheme.backgroundCard, AppTheme.accentBlue.withValues(alpha: 0.4)];
     }
   }
 }

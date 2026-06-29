@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -41,12 +40,12 @@ class FavorisScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Mes Favoris',
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 28,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white)),
                             Text('${favoris.length} · Glisser',
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 13, color: AppTheme.textSecondary)),
                           ],
                         ),
@@ -65,23 +64,23 @@ class FavorisScreen extends StatelessWidget {
                               height: 60,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppTheme.accentBlue.withOpacity(0.10),
+                                color: AppTheme.accentBlue.withValues(alpha: 0.10),
                                 border: Border.all(
-                                    color: AppTheme.accentBlue.withOpacity(0.20)),
+                                    color: AppTheme.accentBlue.withValues(alpha: 0.20)),
                               ),
                               child: const Center(
                                   child: Text('⭐', style: TextStyle(fontSize: 26))),
                             ),
                             const SizedBox(height: 16),
                             Text('Aucun favori',
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
                             const SizedBox(height: 6),
                             Text('Ajoutez des villes en favori\npour les retrouver rapidement',
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
+                                style: AppTheme.poppins(
                                     fontSize: 13,
                                     height: 1.5,
                                     color: AppTheme.textSecondary)),
@@ -100,7 +99,7 @@ class FavorisScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text('🔍 Ajouter une ville',
-                                    style: GoogleFonts.poppins(
+                                    style: AppTheme.poppins(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white)),
@@ -127,7 +126,7 @@ class FavorisScreen extends StatelessWidget {
                             background: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentRed.withOpacity(0.20),
+                                color: AppTheme.accentRed.withValues(alpha: 0.20),
                                 borderRadius: BorderRadius.circular(18),
                               ),
                               alignment: Alignment.centerRight,
@@ -143,7 +142,7 @@ class FavorisScreen extends StatelessWidget {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16)),
                                   title: Text('Retirer des favoris ?',
-                                      style: GoogleFonts.poppins(
+                                      style: AppTheme.poppins(
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white)),
                                   actions: [
@@ -173,7 +172,7 @@ class FavorisScreen extends StatelessWidget {
                                   Expanded(
                                     child: InkWell(
                                       onTap: () =>
-                                          context.push('/detail/${item.ville.id}'),
+                                          context.push('/home/detail/${item.ville.id}'),
                                       child: CityFavoriCard(
                                         ville: item.ville,
                                         favori: item.favori,
@@ -207,7 +206,7 @@ class FavorisScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Divider(
-                                color: Colors.white.withOpacity(0.06), height: 1),
+                                color: Colors.white.withValues(alpha: 0.06), height: 1),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -217,7 +216,7 @@ class FavorisScreen extends StatelessWidget {
                           ),
                           Expanded(
                             child: Divider(
-                                color: Colors.white.withOpacity(0.06), height: 1),
+                                color: Colors.white.withValues(alpha: 0.06), height: 1),
                           ),
                         ],
                       ),

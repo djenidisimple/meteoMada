@@ -28,14 +28,14 @@ class CustomToggle extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: isActive
                   ? BoxDecoration(
-                      color: AppTheme.accentBlue.withOpacity(0.20),
+                      color: AppTheme.accentBlue.withValues(alpha: 0.20),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: AppTheme.accentBlue.withOpacity(0.40),
+                          color: AppTheme.accentBlue.withValues(alpha: 0.40),
                           width: 0.8),
                     )
                   : BoxDecoration(
-                      color: Colors.white.withOpacity(0.07),
+                      color: Colors.white.withValues(alpha: 0.07),
                       borderRadius: BorderRadius.circular(10),
                     ),
               child: Text(

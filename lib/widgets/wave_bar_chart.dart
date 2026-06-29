@@ -28,7 +28,7 @@ class WaveBarChart extends StatelessWidget {
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(2)),
                     color: AppTheme.accentGreen
-                        .withOpacity(0.30 + height * 0.30),
+                        .withValues(alpha: 0.30 + height * 0.30),
                   ),
                 ),
               ],

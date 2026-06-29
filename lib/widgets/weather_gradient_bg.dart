@@ -51,7 +51,7 @@ Widget buildBlob(double size, Color color, double top, double left,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(opacity),
+        color: color.withValues(alpha: opacity),
       ),
     ),
   );

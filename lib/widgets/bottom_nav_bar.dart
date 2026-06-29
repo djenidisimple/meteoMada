@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meteomada/theme/app_theme.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -33,7 +32,7 @@ class BottomNavBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF0A1628),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -55,10 +54,10 @@ class BottomNavBar extends StatelessWidget {
                       : const EdgeInsets.all(8),
                   decoration: isSelected
                       ? BoxDecoration(
-                          color: AppTheme.accentBlue.withOpacity(0.12),
+                          color: AppTheme.accentBlue.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                              color: AppTheme.accentBlue.withOpacity(0.20), width: 0.5),
+                              color: AppTheme.accentBlue.withValues(alpha: 0.20), width: 0.5),
                         )
                       : null,
                   child: Stack(
@@ -72,13 +71,13 @@ class BottomNavBar extends StatelessWidget {
                             size: isSelected ? 20 : 18,
                             color: isSelected
                                 ? AppTheme.accentBlue
-                                : Colors.white.withOpacity(0.35),
+                                : Colors.white.withValues(alpha: 0.35),
                           ),
                           if (isSelected && showLabel) ...[
                             const SizedBox(width: 6),
                             Text(
                               item.label,
-                              style: GoogleFonts.poppins(
+                              style: AppTheme.poppins(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: AppTheme.accentBlue,

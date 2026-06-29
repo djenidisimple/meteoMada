@@ -14,25 +14,33 @@ class WeatherProvider extends ChangeNotifier {
   Ville? _villeActuelle;
   Prevision? _previsionActuelle;
   List<Prevision> _previsions7Jours = [];
+  List<Prevision> _previsionsHoraires = [];
   bool _chargement = false;
   String? _erreur;
 
   Ville? get villeActuelle => _villeActuelle;
   Prevision? get previsionActuelle => _previsionActuelle;
   List<Prevision> get previsions7Jours => _previsions7Jours;
+  List<Prevision> get previsionsHoraires => _previsionsHoraires;
   bool get chargement => _chargement;
   String? get erreur => _erreur;
 
   Future<void> initialiser() async {
-    _villeActuelle = await _villeRepo.getVilleParId('TNR');
-    if (_villeActuelle != null) {
-      await chargerMeteo(_villeActuelle!);
-    }
-    _api.demarrerPolling(() async {
+    try {
+      _villeActuelle = await _villeRepo.getVilleParId('TNR');
       if (_villeActuelle != null) {
         await chargerMeteo(_villeActuelle!);
       }
-    });
+      _api.demarrerPolling(() async {
+        if (_villeActuelle != null) {
+          await chargerMeteo(_villeActuelle!);
+        }
+      });
+    } catch (_) {
+      _chargement = false;
+      _erreur = 'Erreur de démarrage';
+      notifyListeners();
+    }
   }
 
   Future<void> chargerMeteo(Ville ville) async {
@@ -42,6 +50,8 @@ class WeatherProvider extends ChangeNotifier {
 
     try {
       _villeActuelle = ville;
+      _previsionsHoraires = [];
+
       final valide = await _previsionRepo.cacheValide(ville.id);
       if (valide) {
         _previsionActuelle = await _previsionRepo.getDernierePrevision(ville.id);
@@ -50,15 +60,18 @@ class WeatherProvider extends ChangeNotifier {
         await _previsionRepo.supprimerVieillesPrevisions(ville.id);
         final actuelle = await _api.requeteMeteoActuelle(ville.latitude, ville.longitude);
         final p7 = await _api.requetePrevisions7Jours(ville.latitude, ville.longitude);
+        final horaires = await _api.requetePrevisionsHoraires(ville.latitude, ville.longitude);
 
         final avecVille = actuelle.copyWith(villeId: ville.id);
         final p7AvecVille = p7.map((p) => p.copyWith(villeId: ville.id)).toList();
+        final hAvecVille = horaires.map((p) => p.copyWith(villeId: ville.id)).toList();
 
         await _previsionRepo.insererPrevision(avecVille);
         await _previsionRepo.insererPrevisions(p7AvecVille);
 
         _previsionActuelle = avecVille;
         _previsions7Jours = p7AvecVille;
+        _previsionsHoraires = hAvecVille;
       }
       _chargement = false;
       notifyListeners();
@@ -70,11 +83,28 @@ class WeatherProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> chargerPourPosition(double lat, double lon) async {
-    final ville = await _villeRepo.getVilleParCoordonnees(lat, lon);
-    if (ville != null) {
-      await chargerMeteo(ville);
+  Future<void> chargerPourVilleDepuisCoords(double lat, double lon) async {
+    final id = GeocodingId.generer(lat, lon);
+    var ville = await _villeRepo.getVilleParId(id);
+    if (ville == null) {
+      ville = Ville(
+        id: id,
+        nom: 'Position $lat, $lon',
+        region: 'Madagascar',
+        latitude: lat,
+        longitude: lon,
+        altitude: 0,
+        fuseauHoraire: 'Indian/Antananarivo',
+        estCotiere: false,
+      );
+      await _villeRepo.insererVille(ville);
     }
+    await chargerMeteo(ville);
+  }
+
+  void mettreAJourVille(Ville ville) {
+    _villeActuelle = ville;
+    notifyListeners();
   }
 
   Future<void> chargerPourDefaut() async {
@@ -88,6 +118,12 @@ class WeatherProvider extends ChangeNotifier {
   void dispose() {
     _api.arreterPolling();
     super.dispose();
+  }
+}
+
+class GeocodingId {
+  static String generer(double lat, double lon) {
+    return 'loc_${lat.toStringAsFixed(4)}_${lon.toStringAsFixed(4)}';
   }
 }
 

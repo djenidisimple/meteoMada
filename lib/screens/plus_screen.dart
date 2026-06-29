@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -22,13 +21,13 @@ class PlusScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 16),
                 Text('Explorer',
-                    style: GoogleFonts.poppins(
+                    style: AppTheme.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: Colors.white)),
                 const SizedBox(height: 4),
                 Text('Fonctionnalités avancées',
-                    style: GoogleFonts.poppins(
+                    style: AppTheme.poppins(
                         fontSize: 13, color: AppTheme.textSecondary)),
                 const SizedBox(height: 24),
                 Consumer2<AlerteProvider, UtilisateurProvider>(
@@ -52,10 +51,10 @@ class PlusScreen extends StatelessWidget {
                         title: 'Calendrier Cultural',
                         subtitle: 'Conseils semis & récolte',
                         decoration: BoxDecoration(
-                          color: AppTheme.accentGreen.withOpacity(0.10),
+                          color: AppTheme.accentGreen.withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                              color: AppTheme.accentGreen.withOpacity(0.28),
+                              color: AppTheme.accentGreen.withValues(alpha: 0.28),
                               width: 0.8),
                         ),
                         onTap: () => context.push('/plus/calendrier'),
@@ -66,10 +65,10 @@ class PlusScreen extends StatelessWidget {
                         title: 'Comparer Régions',
                         subtitle: 'Températures & humidité',
                         decoration: BoxDecoration(
-                          color: AppTheme.accentBlue.withOpacity(0.10),
+                          color: AppTheme.accentBlue.withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                              color: AppTheme.accentBlue.withOpacity(0.35),
+                              color: AppTheme.accentBlue.withValues(alpha: 0.35),
                               width: 0.8),
                         ),
                         onTap: () => context.push('/plus/comparaison'),
@@ -143,7 +142,7 @@ class _MenuCard extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
@@ -151,7 +150,7 @@ class _MenuCard extends StatelessWidget {
             ),
             const Spacer(),
             Text(title,
-                style: GoogleFonts.poppins(
+                style: AppTheme.poppins(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.white)),
