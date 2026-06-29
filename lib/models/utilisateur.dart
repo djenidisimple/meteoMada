@@ -1,7 +1,6 @@
 class Utilisateur {
   final String id;
   final String pseudo;
-  final String languePreferee;
   final String typeUtilisateur;
   final bool alertesCycloneActivees;
   final bool alertesPluieActivees;
@@ -9,7 +8,6 @@ class Utilisateur {
   Utilisateur({
     required this.id,
     required this.pseudo,
-    this.languePreferee = 'fr',
     this.typeUtilisateur = 'citoyen',
     this.alertesCycloneActivees = true,
     this.alertesPluieActivees = false,
@@ -18,7 +16,6 @@ class Utilisateur {
   factory Utilisateur.fromMap(Map<String, dynamic> map) => Utilisateur(
         id: map['id'] as String,
         pseudo: map['pseudo'] as String,
-        languePreferee: map['langue_preferee'] as String? ?? 'fr',
         typeUtilisateur: map['type_utilisateur'] as String? ?? 'citoyen',
         alertesCycloneActivees:
             (map['alertes_cyclone_activees'] as int? ?? 1) == 1,
@@ -29,7 +26,6 @@ class Utilisateur {
   Map<String, dynamic> toMap() => {
         'id': id,
         'pseudo': pseudo,
-        'langue_preferee': languePreferee,
         'type_utilisateur': typeUtilisateur,
         'alertes_cyclone_activees': alertesCycloneActivees ? 1 : 0,
         'alertes_pluie_activees': alertesPluieActivees ? 1 : 0,
@@ -38,7 +34,6 @@ class Utilisateur {
   Utilisateur copyWith({
     String? id,
     String? pseudo,
-    String? languePreferee,
     String? typeUtilisateur,
     bool? alertesCycloneActivees,
     bool? alertesPluieActivees,
@@ -46,7 +41,6 @@ class Utilisateur {
       Utilisateur(
         id: id ?? this.id,
         pseudo: pseudo ?? this.pseudo,
-        languePreferee: languePreferee ?? this.languePreferee,
         typeUtilisateur: typeUtilisateur ?? this.typeUtilisateur,
         alertesCycloneActivees:
             alertesCycloneActivees ?? this.alertesCycloneActivees,

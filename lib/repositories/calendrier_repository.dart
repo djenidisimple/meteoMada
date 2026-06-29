@@ -6,8 +6,13 @@ class CalendrierRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   StoreRef<String, Map<String, dynamic>> get _store => _dbHelper.calendrierCulturalStore;
 
-  Future<List<CalendrierCultural>> getCalendrierParRegion(
-      String region) async {
+  Future<List<CalendrierCultural>> getTout() async {
+    final db = await _dbHelper.database;
+    final snapshots = await _store.find(db);
+    return snapshots.map((s) => CalendrierCultural.fromMap(s.value)).toList();
+  }
+
+  Future<List<CalendrierCultural>> getCalendrierParRegion(String region) async {
     final db = await _dbHelper.database;
     final snapshots = await _store.find(db, finder: Finder(
       filter: Filter.equals('region', region),
@@ -16,8 +21,7 @@ class CalendrierRepository {
     return snapshots.map((s) => CalendrierCultural.fromMap(s.value)).toList();
   }
 
-  Future<List<CalendrierCultural>> getCalendrierParTypeCulture(
-      String typeCulture) async {
+  Future<List<CalendrierCultural>> getCalendrierParTypeCulture(String typeCulture) async {
     final db = await _dbHelper.database;
     final snapshots = await _store.find(db, finder: Finder(
       filter: Filter.equals('type_culture', typeCulture),
@@ -26,8 +30,7 @@ class CalendrierRepository {
     return snapshots.map((s) => CalendrierCultural.fromMap(s.value)).toList();
   }
 
-  Future<List<CalendrierCultural>> getCalendrierDuMois(
-      int mois) async {
+  Future<List<CalendrierCultural>> getCalendrierDuMois(int mois) async {
     final db = await _dbHelper.database;
     final snapshots = await _store.find(db, finder: Finder(
       filter: Filter.custom((value) {

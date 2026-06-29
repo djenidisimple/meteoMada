@@ -6,23 +6,26 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
-  final bool inset;
+  final Color? tintColor;
   final VoidCallback? onTap;
-  final BoxDecoration? decoration;
 
   const GlassCard({
     super.key,
     required this.child,
     this.margin,
     this.padding,
-    this.borderRadius = 16,
-    this.inset = false,
+    this.borderRadius = 24,
+    this.tintColor,
     this.onTap,
-    this.decoration,
   });
 
   @override
   Widget build(BuildContext context) {
+    final tc = tintColor;
+    final decoration = tc != null
+        ? AppTheme.glassTinted(radius: borderRadius, tint: tc)
+        : AppTheme.glass(radius: borderRadius);
+
     return Container(
       margin: margin,
       child: Material(
@@ -34,12 +37,7 @@ class GlassCard extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             padding: padding ?? const EdgeInsets.all(16),
-            decoration: decoration ??
-                BoxDecoration(
-                  color: AppTheme.cardBg,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                  border: Border.all(color: AppTheme.cardBorder, width: 0.5),
-                ),
+            decoration: decoration,
             child: child,
           ),
         ),

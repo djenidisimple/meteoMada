@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:meteomada/models/ville.dart';
 
@@ -23,7 +24,8 @@ class GeocodingResult {
 }
 
 class GeocodingService {
-  static const _baseUrl = 'https://nominatim.openstreetmap.org';
+  String get _baseUrl =>
+      dotenv.env['NOMINATIM_BASE_URL'] ?? 'https://nominatim.openstreetmap.org';
 
   Future<List<GeocodingResult>> rechercher(String query) async {
     if (query.trim().isEmpty) return [];

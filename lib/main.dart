@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:meteomada/router/app_router.dart';
@@ -16,13 +17,14 @@ import 'package:meteomada/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
+    await dotenv.load(fileName: '.env');
     await DatabaseHelper().database;
     await NotificationService().initialiser();
   } catch (_) {
     runApp(_ErrorApp());
     return;
   }
-  runApp(const ToeranaApp());
+  runApp(const MeteoMadaApp());
 }
 
 class _ErrorApp extends StatelessWidget {
@@ -64,8 +66,8 @@ class _ErrorApp extends StatelessWidget {
   }
 }
 
-class ToeranaApp extends StatelessWidget {
-  const ToeranaApp({super.key});
+class MeteoMadaApp extends StatelessWidget {
+  const MeteoMadaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -81,38 +83,30 @@ class ToeranaApp extends StatelessWidget {
             create: (ctx) =>
                 FavorisProvider()..initialiser(ctx.read<UtilisateurProvider>().userId)),
       ],
-      child: Consumer<UtilisateurProvider>(
-        builder: (context, up, _) {
-          Locale locale;
-          switch (up.utilisateur?.languePreferee) {
-            case 'en':
-              locale = const Locale('en');
-              break;
-            case 'mg':
-              locale = const Locale('mg');
-              break;
-            default:
-              locale = const Locale('fr');
-          }
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'Toerana',
-            locale: locale,
-            supportedLocales: const [
-              Locale('fr'),
-              Locale('en'),
-              Locale('mg'),
-            ],
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            routerConfig: appRouter,
-          );
-        },
-      ),
+      child: const _ToeranaApp(),
+    );
+  }
+}
+
+class _ToeranaApp extends StatelessWidget {
+  const _ToeranaApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Toerana',
+      locale: const Locale('fr'),
+      supportedLocales: const [
+        Locale('fr'),
+      ],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      routerConfig: appRouter,
     );
   }
 }

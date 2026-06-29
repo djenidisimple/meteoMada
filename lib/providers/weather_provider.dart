@@ -44,43 +44,59 @@ class WeatherProvider extends ChangeNotifier {
   }
 
   Future<void> chargerMeteo(Ville ville) async {
-    _chargement = true;
     _erreur = null;
-    notifyListeners();
+    _villeActuelle = ville;
+    _previsionsHoraires = [];
 
-    try {
-      _villeActuelle = ville;
-      _previsionsHoraires = [];
+    _previsionActuelle =
+        await _previsionRepo.getDernierePrevision(ville.id);
+    _previsions7Jours =
+        await _previsionRepo.getPrevisions7Jours(ville.id);
 
-      final valide = await _previsionRepo.cacheValide(ville.id);
-      if (valide) {
-        _previsionActuelle = await _previsionRepo.getDernierePrevision(ville.id);
-        _previsions7Jours = await _previsionRepo.getPrevisions7Jours(ville.id);
-      } else {
-        await _previsionRepo.supprimerVieillesPrevisions(ville.id);
-        final actuelle = await _api.requeteMeteoActuelle(ville.latitude, ville.longitude);
-        final p7 = await _api.requetePrevisions7Jours(ville.latitude, ville.longitude);
-        final horaires = await _api.requetePrevisionsHoraires(ville.latitude, ville.longitude);
-
-        final avecVille = actuelle.copyWith(villeId: ville.id);
-        final p7AvecVille = p7.map((p) => p.copyWith(villeId: ville.id)).toList();
-        final hAvecVille = horaires.map((p) => p.copyWith(villeId: ville.id)).toList();
-
-        await _previsionRepo.insererPrevision(avecVille);
-        await _previsionRepo.insererPrevisions(p7AvecVille);
-
-        _previsionActuelle = avecVille;
-        _previsions7Jours = p7AvecVille;
-        _previsionsHoraires = hAvecVille;
-      }
+    final valide = await _previsionRepo.cacheValide(ville.id);
+    if (valide && _previsionActuelle != null) {
       _chargement = false;
       notifyListeners();
-    } catch (e) {
-      _previsionActuelle = await _previsionRepo.getDernierePrevision(ville.id);
+      _rafraichirArrierePlan(ville);
+    } else {
+      _chargement = true;
+      notifyListeners();
+      await _rafraichirArrierePlan(ville);
+    }
+  }
+
+  Future<void> _rafraichirArrierePlan(Ville ville) async {
+    try {
+      final results = await Future.wait([
+        _api.requeteMeteoActuelle(ville.latitude, ville.longitude),
+        _api.requetePrevisions7Jours(ville.latitude, ville.longitude),
+        _api.requetePrevisionsHoraires(ville.latitude, ville.longitude),
+      ]);
+
+      final actuelle = (results[0] as Prevision).copyWith(villeId: ville.id);
+      final p7 = (results[1] as List<Prevision>)
+          .map((p) => p.copyWith(villeId: ville.id))
+          .toList();
+      final horaires = (results[2] as List<Prevision>)
+          .map((p) => p.copyWith(villeId: ville.id))
+          .toList();
+
+      await _previsionRepo.supprimerVieillesPrevisions(ville.id);
+      await _previsionRepo.insererPrevision(actuelle);
+      await _previsionRepo.insererPrevisions(p7);
+
+      _previsionActuelle = actuelle;
+      _previsions7Jours = p7;
+      _previsionsHoraires = horaires;
+      _chargement = false;
+      _erreur = null;
+    } catch (_) {
+      _previsionActuelle ??=
+          await _previsionRepo.getDernierePrevision(ville.id);
       _chargement = false;
       _erreur = 'Erreur de chargement';
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   Future<void> chargerPourVilleDepuisCoords(double lat, double lon) async {
@@ -125,37 +141,4 @@ class GeocodingId {
   static String generer(double lat, double lon) {
     return 'loc_${lat.toStringAsFixed(4)}_${lon.toStringAsFixed(4)}';
   }
-}
-
-extension on Prevision {
-  Prevision copyWith({
-    String? id,
-    String? villeId,
-    String? condition,
-    String? directionVent,
-    String? icone,
-    DateTime? dateHeure,
-    DateTime? dateCreation,
-    double? temperature,
-    double? temperatureRessentie,
-    double? humidite,
-    double? vitesseVent,
-    double? probabilitePluie,
-    double? indiceUV,
-  }) =>
-      Prevision(
-        id: id ?? this.id,
-        villeId: villeId ?? this.villeId,
-        condition: condition ?? this.condition,
-        directionVent: directionVent ?? this.directionVent,
-        icone: icone ?? this.icone,
-        dateHeure: dateHeure ?? this.dateHeure,
-        dateCreation: dateCreation ?? this.dateCreation,
-        temperature: temperature ?? this.temperature,
-        temperatureRessentie: temperatureRessentie ?? this.temperatureRessentie,
-        humidite: humidite ?? this.humidite,
-        vitesseVent: vitesseVent ?? this.vitesseVent,
-        probabilitePluie: probabilitePluie ?? this.probabilitePluie,
-        indiceUV: indiceUV ?? this.indiceUV,
-      );
 }

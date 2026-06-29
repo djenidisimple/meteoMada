@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sembast/sembast.dart';
 import 'package:sembast_web/sembast_web.dart' as sembast_web;
@@ -10,7 +11,7 @@ class DatabaseHelper {
   DatabaseHelper._internal();
 
   static Database? _database;
-  static bool _initialisationEnCours = false;
+  static Completer<void>? _initCompleter;
 
   final villeStore = stringMapStoreFactory.store('ville');
   final previsionStore = stringMapStoreFactory.store('prevision');
@@ -24,20 +25,18 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    if (_initialisationEnCours) {
-      for (int i = 0; i < 20; i++) {
-        await Future.delayed(const Duration(milliseconds: 100));
-        if (_database != null) return _database!;
-        if (!_initialisationEnCours) break;
-      }
+    if (_initCompleter != null) {
+      await _initCompleter!.future;
+      return _database!;
     }
-    if (_database != null) return _database!;
-    _initialisationEnCours = true;
+    _initCompleter = Completer<void>();
     try {
       _database = await _initDatabase();
       await _insertInitialData();
-    } finally {
-      _initialisationEnCours = false;
+      _initCompleter!.complete();
+    } catch (e) {
+      _initCompleter!.completeError(e);
+      rethrow;
     }
     return _database!;
   }
@@ -60,8 +59,7 @@ class DatabaseHelper {
     await utilisateurStore.record('default_user').put(db, {
       'id': 'default_user',
       'pseudo': 'Utilisateur',
-      'langue_preferee': 'fr',
-      'type_utilisateur': 'standard',
+      'type_utilisateur': 'citoyen',
       'alertes_cyclone_activees': 1,
       'alertes_pluie_activees': 0,
     });

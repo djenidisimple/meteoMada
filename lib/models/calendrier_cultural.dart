@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class CalendrierCultural {
   final String id;
   final String region;
@@ -18,6 +20,27 @@ class CalendrierCultural {
     required this.moisRecolteDebut,
     required this.moisRecolteFin,
   });
+
+  CalendrierCultural copyWith({
+    String? id,
+    String? region,
+    String? typeCulture,
+    String? conseilsMeteo,
+    int? moisSemisDebut,
+    int? moisSemisFin,
+    int? moisRecolteDebut,
+    int? moisRecolteFin,
+  }) =>
+      CalendrierCultural(
+        id: id ?? this.id,
+        region: region ?? this.region,
+        typeCulture: typeCulture ?? this.typeCulture,
+        conseilsMeteo: conseilsMeteo ?? this.conseilsMeteo,
+        moisSemisDebut: moisSemisDebut ?? this.moisSemisDebut,
+        moisSemisFin: moisSemisFin ?? this.moisSemisFin,
+        moisRecolteDebut: moisRecolteDebut ?? this.moisRecolteDebut,
+        moisRecolteFin: moisRecolteFin ?? this.moisRecolteFin,
+      );
 
   factory CalendrierCultural.fromMap(Map<String, dynamic> map) =>
       CalendrierCultural(
@@ -42,30 +65,30 @@ class CalendrierCultural {
         'mois_recolte_fin': moisRecolteFin,
       };
 
-  String get typeCultureEmoji {
+  IconData get typeCultureIcon {
     switch (typeCulture) {
       case 'vary':
-        return '🌾';
+        return Icons.eco_outlined;
       case 'katsaka':
-        return '🌽';
+        return Icons.agriculture_outlined;
       case 'mangahazo':
-        return '🥔';
+        return Icons.grass_outlined;
       case 'haricot':
-        return '🌱';
+        return Icons.eco_outlined;
       case 'pomme_de_terre':
-        return '🥔';
+        return Icons.grass_outlined;
       case 'vanille':
-        return '🌿';
+        return Icons.eco_outlined;
       case 'cafe':
-        return '☕';
+        return Icons.coffee_outlined;
       case 'cacao':
-        return '🍫';
+        return Icons.coffee_outlined;
       case 'arachide':
-        return '🥜';
+        return Icons.eco_outlined;
       case 'coton':
-        return '🌿';
+        return Icons.eco_outlined;
       default:
-        return '🌾';
+        return Icons.eco_outlined;
     }
   }
 

@@ -21,8 +21,6 @@ class UtilisateurProvider extends ChangeNotifier {
         _utilisateur = Utilisateur(
           id: 'default_user',
           pseudo: 'Utilisateur',
-          languePreferee: 'fr',
-          typeUtilisateur: 'citoyen',
         );
         await _repo.insererOuMAJ(_utilisateur!);
       }
@@ -30,18 +28,9 @@ class UtilisateurProvider extends ChangeNotifier {
       _utilisateur = Utilisateur(
         id: 'default_user',
         pseudo: 'Utilisateur',
-        languePreferee: 'fr',
-        typeUtilisateur: 'citoyen',
       );
     }
     _chargement = false;
-    notifyListeners();
-  }
-
-  Future<void> updateLangue(String langue) async {
-    if (_utilisateur == null) return;
-    _utilisateur = _utilisateur!.copyWith(languePreferee: langue);
-    await _repo.insererOuMAJ(_utilisateur!);
     notifyListeners();
   }
 

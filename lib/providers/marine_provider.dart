@@ -22,17 +22,7 @@ class MarineProvider extends ChangeNotifier {
         _condition = cache;
       } else {
         final marine = await _api.requeteConditionsMarines(lat, lon);
-        final avecVille = ConditionMarine(
-          id: marine.id,
-          villeId: villeId,
-          hauteurVagues: marine.hauteurVagues,
-          temperatureEau: marine.temperatureEau,
-          etatMaree: marine.etatMaree,
-          ventMarin: marine.ventMarin,
-          houle: marine.houle,
-          baignadeDangereuse: marine.baignadeDangereuse,
-          pechePossible: marine.pechePossible,
-        );
+        final avecVille = marine.copyWith(villeId: villeId);
         await _repo.insererConditionMarine(avecVille);
         _condition = avecVille;
       }

@@ -17,6 +17,25 @@ class NotificationLocale {
     this.villeConcernee,
   });
 
+  NotificationLocale copyWith({
+    String? id,
+    String? titre,
+    String? message,
+    String? type,
+    DateTime? dateEnvoi,
+    bool? estLue,
+    String? villeConcernee,
+  }) =>
+      NotificationLocale(
+        id: id ?? this.id,
+        titre: titre ?? this.titre,
+        message: message ?? this.message,
+        type: type ?? this.type,
+        dateEnvoi: dateEnvoi ?? this.dateEnvoi,
+        estLue: estLue ?? this.estLue,
+        villeConcernee: villeConcernee ?? this.villeConcernee,
+      );
+
   factory NotificationLocale.fromMap(Map<String, dynamic> map) =>
       NotificationLocale(
         id: map['id'] as String,

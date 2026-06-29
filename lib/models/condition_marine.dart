@@ -21,6 +21,29 @@ class ConditionMarine {
     required this.pechePossible,
   });
 
+  ConditionMarine copyWith({
+    String? id,
+    String? villeId,
+    String? etatMaree,
+    String? ventMarin,
+    double? hauteurVagues,
+    double? temperatureEau,
+    double? houle,
+    bool? baignadeDangereuse,
+    bool? pechePossible,
+  }) =>
+      ConditionMarine(
+        id: id ?? this.id,
+        villeId: villeId ?? this.villeId,
+        etatMaree: etatMaree ?? this.etatMaree,
+        ventMarin: ventMarin ?? this.ventMarin,
+        hauteurVagues: hauteurVagues ?? this.hauteurVagues,
+        temperatureEau: temperatureEau ?? this.temperatureEau,
+        houle: houle ?? this.houle,
+        baignadeDangereuse: baignadeDangereuse ?? this.baignadeDangereuse,
+        pechePossible: pechePossible ?? this.pechePossible,
+      );
+
   factory ConditionMarine.fromMap(Map<String, dynamic> map) =>
       ConditionMarine(
         id: map['id'] as String,

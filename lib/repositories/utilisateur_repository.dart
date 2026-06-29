@@ -22,16 +22,6 @@ class UtilisateurRepository {
     await _store.record(utilisateur.id).put(db, utilisateur.toMap());
   }
 
-  Future<void> mettreAJourLangue(String utilisateurId, String langue) async {
-    final db = await _dbHelper.database;
-    final record = await _store.record(utilisateurId).get(db);
-    if (record != null) {
-      final updated = Map<String, dynamic>.from(record);
-      updated['langue_preferee'] = langue;
-      await _store.record(utilisateurId).put(db, updated);
-    }
-  }
-
   Future<void> mettreAJourNotifications(
     String utilisateurId, {
     bool? cyclone,

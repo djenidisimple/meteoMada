@@ -6,6 +6,7 @@ class HourlyCard extends StatelessWidget {
   final IconData icone;
   final String temp;
   final bool isActive;
+  final Color? iconColor;
 
   const HourlyCard({
     super.key,
@@ -13,34 +14,46 @@ class HourlyCard extends StatelessWidget {
     required this.icone,
     required this.temp,
     this.isActive = false,
+    this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = iconColor ?? (isActive ? Colors.white : AppTheme.textSecondary);
     return Container(
-      width: 68,
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: isActive
-          ? AppTheme.activeCard
-          : AppTheme.glassCard,
+      width: 72,
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: isActive ? 0.08 : 0.04),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isActive ? 0.12 : 0.04),
+          width: 0.5,
+        ),
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(heure,
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                  color: isActive
-                      ? AppTheme.accentBlue
-                      : AppTheme.textSecondary)),
-          const SizedBox(height: 6),
-          Icon(icone, size: 22, color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary),
-          const SizedBox(height: 4),
-          Text(temp,
-              style: AppTheme.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white)),
+          Text(
+            heure,
+            style: AppTheme.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: isActive ? Colors.white : AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Icon(icone, size: 24, color: color),
+          const SizedBox(height: 8),
+          Text(
+            temp,
+            style: AppTheme.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +39,8 @@ class PlusScreen extends StatelessWidget {
 
                     final cards = <_MenuCard>[
                       _MenuCard(
-                        icon: '🌀',
+                        icon: Icons.cyclone_outlined,
+                        iconColor: AppTheme.accentRed,
                         title: 'Alertes Cyclones',
                         subtitle: countActives > 0
                             ? '$countActives active(s)'
@@ -47,7 +49,8 @@ class PlusScreen extends StatelessWidget {
                         onTap: () => context.push('/plus/alertes'),
                       ),
                       _MenuCard(
-                        icon: '🌾',
+                        icon: Icons.eco_outlined,
+                        iconColor: AppTheme.accentGreen,
                         title: 'Calendrier Cultural',
                         subtitle: 'Conseils semis & récolte',
                         decoration: BoxDecoration(
@@ -61,7 +64,8 @@ class PlusScreen extends StatelessWidget {
                         priority: isAgri,
                       ),
                       _MenuCard(
-                        icon: '📊',
+                        icon: Icons.bar_chart_outlined,
+                        iconColor: AppTheme.accentBlue,
                         title: 'Comparer Régions',
                         subtitle: 'Températures & humidité',
                         decoration: BoxDecoration(
@@ -74,9 +78,10 @@ class PlusScreen extends StatelessWidget {
                         onTap: () => context.push('/plus/comparaison'),
                       ),
                       _MenuCard(
-                        icon: '⚙️',
+                        icon: CupertinoIcons.settings,
+                        iconColor: Colors.white,
                         title: 'Paramètres',
-                        subtitle: 'Langue, unités, profil',
+                        subtitle: 'Unités, profil, notifications',
                         decoration: AppTheme.glassCard,
                         onTap: () => context.push('/plus/settings'),
                       ),
@@ -112,7 +117,8 @@ class PlusScreen extends StatelessWidget {
 }
 
 class _MenuCard extends StatelessWidget {
-  final String icon;
+  final IconData icon;
+  final Color iconColor;
   final String title;
   final String subtitle;
   final BoxDecoration decoration;
@@ -121,6 +127,7 @@ class _MenuCard extends StatelessWidget {
 
   const _MenuCard({
     required this.icon,
+    required this.iconColor,
     required this.title,
     required this.subtitle,
     required this.decoration,
@@ -142,11 +149,11 @@ class _MenuCard extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
-                  child: Text(icon, style: const TextStyle(fontSize: 18))),
+                  child: Icon(icon, size: 18, color: iconColor)),
             ),
             const Spacer(),
             Text(title,

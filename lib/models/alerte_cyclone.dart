@@ -25,6 +25,27 @@ class AlerteCyclone {
   Color get niveauColor => AppTheme.colorForNiveau(niveau);
   String get niveauLabel => AppTheme.labelForNiveau(niveau);
 
+  AlerteCyclone copyWith({
+    String? id,
+    String? nomCyclone,
+    String? consignes,
+    String? niveau,
+    DateTime? dateEmission,
+    DateTime? dateFinPrevue,
+    bool? estActive,
+    List<String>? regions,
+  }) =>
+      AlerteCyclone(
+        id: id ?? this.id,
+        nomCyclone: nomCyclone ?? this.nomCyclone,
+        consignes: consignes ?? this.consignes,
+        niveau: niveau ?? this.niveau,
+        dateEmission: dateEmission ?? this.dateEmission,
+        dateFinPrevue: dateFinPrevue ?? this.dateFinPrevue,
+        estActive: estActive ?? this.estActive,
+        regions: regions ?? this.regions,
+      );
+
   factory AlerteCyclone.fromMap(Map<String, dynamic> map) => AlerteCyclone(
         id: map['id'] as String,
         nomCyclone: map['nom_cyclone'] as String,

@@ -14,6 +14,7 @@ class AlerteProvider extends ChangeNotifier {
   List<AlerteCyclone> _historique = [];
   String? _filtreRegion;
   bool _chargement = false;
+  Timer? _pollingTimer;
 
   List<AlerteCyclone> get actives => _actives;
   List<AlerteCyclone> get historique => _historique;
@@ -43,32 +44,43 @@ class AlerteProvider extends ChangeNotifier {
     _chargement = false;
     notifyListeners();
 
-    Timer.periodic(const Duration(minutes: 30), (_) async {
-      final apiAlertes = await _api.requeteAlertesActives();
-      for (final a in apiAlertes) {
-        final existe = await _repo.alerteExistante(a.id);
-        if (!existe) {
-          await _repo.insererAlerte(a);
-          await _repo.insererRegions(a.id, a.regions);
-          if (a.niveau == 'alerte_orange' || a.niveau == 'alerte_rouge') {
-            _notif.creerNotificationAlerte(a);
-          }
-        } else {
-          final existante = await _repo.getDetailsAlerte(a.id);
-          if (existante != null && existante.niveau != a.niveau) {
-            await _repo.mettreAJourAlerte(a);
-            await _repo.mettreAJourRegions(a.id, a.regions);
-            _notif.creerNotificationMiseAJour(a);
-          }
+    _pollingTimer = Timer.periodic(const Duration(minutes: 30), (_) async {
+      await _synchroniserAlertes();
+    });
+  }
+
+  Future<void> _synchroniserAlertes() async {
+    final apiAlertes = await _api.requeteAlertesActives();
+    for (final a in apiAlertes) {
+      final existe = await _repo.alerteExistante(a.id);
+      if (!existe) {
+        await _repo.insererAlerte(a);
+        await _repo.insererRegions(a.id, a.regions);
+        if (a.niveau == 'alerte_orange' || a.niveau == 'alerte_rouge') {
+          _notif.creerNotificationAlerte(a);
+        }
+      } else {
+        final existante = await _repo.getDetailsAlerte(a.id);
+        if (existante != null && existante.niveau != a.niveau) {
+          await _repo.mettreAJourAlerte(a);
+          await _repo.mettreAJourRegions(a.id, a.regions);
+          _notif.creerNotificationMiseAJour(a);
         }
       }
-      _actives = await _repo.getAlertesActives();
-      notifyListeners();
-    });
+    }
+    _actives = await _repo.getAlertesActives();
+    notifyListeners();
   }
 
   void setFiltreRegion(String? region) {
     _filtreRegion = region;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+    super.dispose();
   }
 }

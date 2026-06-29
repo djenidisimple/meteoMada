@@ -1,0 +1,7 @@
+# Copiez ce fichier en key.properties et remplissez vos informations
+# Génération du keystore (à faire une seule fois) :
+#   keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+storeFile=upload-keystore.jks
+storePassword=VOTRE_MOT_DE_PASSE
+keyAlias=upload
+keyPassword=VOTRE_MOT_DE_PASSE

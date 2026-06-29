@@ -38,9 +38,9 @@ class _AppShellState extends State<AppShell> {
     final loc = GoRouterState.of(context).uri.toString();
     if (loc.startsWith('/favoris')) {
       _currentIndex = 1;
-    } else if (loc.startsWith('/carte')) {
+    } else if (loc.startsWith('/plus/alertes')) {
       _currentIndex = 2;
-    } else if (loc.startsWith('/plus')) {
+    } else if (loc.startsWith('/carte')) {
       _currentIndex = 3;
     } else {
       _currentIndex = 0;
@@ -51,9 +51,9 @@ class _AppShellState extends State<AppShell> {
     setState(() => _currentIndex = index);
     switch (index) {
       case 0: context.go('/home');
-      case 1: context.go('/favoris');
-      case 2: context.go('/carte');
-      case 3: context.go('/plus');
+      case 1: context.go('/favoris/search');
+      case 2: context.go('/plus/alertes');
+      case 3: context.go('/carte');
     }
   }
 

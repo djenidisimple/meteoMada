@@ -77,10 +77,10 @@ class NotificationService {
 
   Importance _importancePourNiveau(String niveau) {
     switch (niveau) {
-      case 'AlerteRouge':
-      case 'CycloneIntense':
+      case 'alerte_rouge':
+      case 'cyclone_intense':
         return Importance.max;
-      case 'AlerteOrange':
+      case 'alerte_orange':
         return Importance.high;
       default:
         return Importance.defaultImportance;
@@ -89,10 +89,10 @@ class NotificationService {
 
   Priority _priorityPourNiveau(String niveau) {
     switch (niveau) {
-      case 'AlerteRouge':
-      case 'CycloneIntense':
+      case 'alerte_rouge':
+      case 'cyclone_intense':
         return Priority.max;
-      case 'AlerteOrange':
+      case 'alerte_orange':
         return Priority.high;
       default:
         return Priority.defaultPriority;
@@ -101,12 +101,12 @@ class NotificationService {
 
   int _couleurPourNiveau(String niveau) {
     switch (niveau) {
-      case 'AlerteJaune':
+      case 'alerte_jaune':
         return 0xFFFFFF00;
-      case 'AlerteOrange':
+      case 'alerte_orange':
         return 0xFFFFA500;
-      case 'AlerteRouge':
-      case 'CycloneIntense':
+      case 'alerte_rouge':
+      case 'cyclone_intense':
         return 0xFFFF0000;
       default:
         return 0xFF0000FF;

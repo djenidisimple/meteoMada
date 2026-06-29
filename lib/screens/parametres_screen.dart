@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +14,7 @@ class ParametresScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(color: Color(0xFF080C18)),
+      decoration: const BoxDecoration(gradient: AppTheme.homeScreenGradient),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -41,8 +42,6 @@ class ParametresScreen extends StatelessWidget {
                   _profileCard(user?.pseudo ?? 'Utilisateur', user?.typeUtilisateur ?? 'citoyen'),
                   const SizedBox(height: 16),
                   _typeUtilisateurSection(up, user?.typeUtilisateur ?? 'citoyen'),
-                  const SizedBox(height: 12),
-                  _langueSelector(up, user?.languePreferee ?? 'fr'),
                   const SizedBox(height: 12),
                   _affichageSection(),
                   const SizedBox(height: 12),
@@ -78,7 +77,7 @@ class ParametresScreen extends StatelessWidget {
                   colors: [AppTheme.accentBlue, AppTheme.accentBlueLight]),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(child: Text('🇲🇬', style: TextStyle(fontSize: 22))),
+            child: const Icon(CupertinoIcons.person_alt, color: Colors.white, size: 22),
           ),
           const SizedBox(width: 14),
           Column(
@@ -95,8 +94,15 @@ class ParametresScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: color.withValues(alpha: 0.35), width: 0.5),
                 ),
-                child: Text(_typeLabel(type),
-                    style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(_typeIcon(type), size: 10, color: color),
+                    const SizedBox(width: 4),
+                    Text(_typeLabel(type),
+                        style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
+                  ],
+                ),
               ),
             ],
           ),
@@ -111,18 +117,24 @@ class ParametresScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Type d\'utilisateur',
-              style: AppTheme.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          Row(
+            children: [
+              Icon(Icons.people_outlined, size: 16, color: AppTheme.textSecondary),
+              const SizedBox(width: 8),
+              Text('Type d\'utilisateur',
+                  style: AppTheme.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+            ],
+          ),
           const SizedBox(height: 10),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             children: [
-              _typeChip('🌾', 'Agriculteur', 'agriculteur', AppTheme.accentYellow, current, up),
-              _typeChip('🎣', 'Pêcheur', 'pecheur', AppTheme.accentGreen, current, up),
-              _typeChip('👤', 'Citoyen', 'citoyen', AppTheme.accentBlue, current, up),
-              _typeChip('🚢', 'Marin', 'marin', AppTheme.accentOrange, current, up),
+              _typeChip(CupertinoIcons.sun_max, 'Agriculteur', 'agriculteur', AppTheme.accentYellow, current, up),
+              _typeChip(CupertinoIcons.drop, 'Pêcheur', 'pecheur', AppTheme.accentGreen, current, up),
+              _typeChip(CupertinoIcons.person, 'Citoyen', 'citoyen', AppTheme.accentBlue, current, up),
+              _typeChip(Icons.directions_boat_outlined, 'Marin', 'marin', AppTheme.accentOrange, current, up),
             ],
           ),
         ],
@@ -130,7 +142,7 @@ class ParametresScreen extends StatelessWidget {
     );
   }
 
-  Widget _typeChip(String emoji, String label, String type, Color color,
+  Widget _typeChip(IconData icon, String label, String type, Color color,
       String current, UtilisateurProvider up) {
     final isActive = current == type;
     return GestureDetector(
@@ -148,71 +160,17 @@ class ParametresScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 0.5),
               ),
-        child: Text('$emoji $label',
-            style: AppTheme.poppins(
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? color : AppTheme.textSecondary)),
-      ),
-    );
-  }
-
-  Widget _langueSelector(UtilisateurProvider up, String current) {
-    return GlassCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Langue',
-              style: AppTheme.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _langueTile('🇫🇷', 'Français', 'fr', current, up),
-              const SizedBox(width: 6),
-              _langueTile('🇬🇧', 'English', 'en', current, up),
-              const SizedBox(width: 6),
-              _langueTile('🇲🇬', 'Malagasy', 'mg', current, up),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _langueTile(
-      String flag, String label, String code, String current, UtilisateurProvider up) {
-    final isActive = current == code;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          up.updateLangue(code);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: isActive
-              ? BoxDecoration(
-                  color: AppTheme.accentBlue.withValues(alpha: 0.20),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                      color: AppTheme.accentBlue.withValues(alpha: 0.40), width: 0.8),
-                )
-              : BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-          child: Column(
-            children: [
-              Text(flag, style: const TextStyle(fontSize: 18)),
-              const SizedBox(height: 2),
-              Text(label,
-                  style: AppTheme.poppins(
-                      fontSize: 10,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                      color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
-            ],
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: isActive ? color : AppTheme.textSecondary),
+            const SizedBox(width: 6),
+            Text(label,
+                style: AppTheme.poppins(
+                    fontSize: 12,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    color: isActive ? color : AppTheme.textSecondary)),
+          ],
         ),
       ),
     );
@@ -224,15 +182,27 @@ class ParametresScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Affichage',
-              style: AppTheme.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          Row(
+            children: [
+              Icon(Icons.visibility_outlined, size: 16, color: AppTheme.textSecondary),
+              const SizedBox(width: 8),
+              Text('Affichage',
+                  style: AppTheme.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+            ],
+          ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Température',
-                  style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
+              Row(
+                children: [
+                  Icon(Icons.thermostat_outlined, size: 14, color: AppTheme.textSecondary),
+                  const SizedBox(width: 8),
+                  Text('Température',
+                      style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
+                ],
+              ),
               Row(
                 children: [
                   _tempToggle('°C', true),
@@ -246,8 +216,14 @@ class ParametresScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Thème sombre',
-                  style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
+              Row(
+                children: [
+                  Icon(Icons.dark_mode_outlined, size: 14, color: AppTheme.textSecondary),
+                  const SizedBox(width: 8),
+                  Text('Thème sombre',
+                      style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
+                ],
+              ),
               CustomSwitch(value: true, activeColor: AppTheme.accentBlue, onChanged: () {}),
             ],
           ),
@@ -283,35 +259,41 @@ class ParametresScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Notifications',
-              style: AppTheme.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          Row(
+            children: [
+              Icon(CupertinoIcons.bell, size: 16, color: AppTheme.textSecondary),
+              const SizedBox(width: 8),
+              Text('Notifications',
+                  style: AppTheme.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+            ],
+          ),
           const SizedBox(height: 10),
-          _notifRow('🌀', 'Alertes cycloniques',
+          _notifRow(Icons.cyclone_outlined, 'Alertes cycloniques',
               user?.alertesCycloneActivees ?? true, AppTheme.accentRed, () {
             up.updateAlertesCyclone(!(user?.alertesCycloneActivees ?? true));
           }),
           Divider(height: 16, color: Colors.white.withValues(alpha: 0.06)),
-          _notifRow('🌧', 'Alertes de pluie',
+          _notifRow(Icons.water_drop_outlined, 'Alertes de pluie',
               user?.alertesPluieActivees ?? false, AppTheme.accentBlue, () {
             up.updateAlertesPluie(!(user?.alertesPluieActivees ?? false));
           }),
           if (user?.typeUtilisateur == 'agriculteur') ...[
             Divider(height: 16, color: Colors.white.withValues(alpha: 0.06)),
-            _notifRow('🌾', 'Conseils culturaux', true, AppTheme.accentYellow, () {}),
+            _notifRow(Icons.eco_outlined, 'Conseils culturaux', true, AppTheme.accentYellow, () {}),
           ],
         ],
       ),
     );
   }
 
-  Widget _notifRow(String emoji, String label, bool value, Color color, VoidCallback onChanged) {
+  Widget _notifRow(IconData icon, String label, bool value, Color color, VoidCallback onChanged) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 14)),
+            Icon(icon, size: 16, color: color),
             const SizedBox(width: 8),
             Text(label,
                 style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
@@ -328,9 +310,15 @@ class ParametresScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('À propos',
-              style: AppTheme.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+          Row(
+            children: [
+              Icon(CupertinoIcons.info, size: 16, color: AppTheme.textSecondary),
+              const SizedBox(width: 8),
+              Text('À propos',
+                  style: AppTheme.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+            ],
+          ),
           const SizedBox(height: 10),
           _infoRow('Source données', 'DGM Madagascar'),
           const SizedBox(height: 4),
@@ -338,7 +326,6 @@ class ParametresScreen extends StatelessWidget {
           const SizedBox(height: 12),
           InkWell(
             onTap: () {
-              // TODO: ouvrir email support
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('Support: contact@toerana.mg'),
@@ -357,12 +344,19 @@ class ParametresScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppTheme.accentBlue.withValues(alpha: 0.20)),
               ),
-              child: Text('Contacter le support',
-                  textAlign: TextAlign.center,
-                  style: AppTheme.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.accentBlue)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(CupertinoIcons.mail, size: 14, color: AppTheme.accentBlue),
+                  const SizedBox(width: 6),
+                  Text('Contacter le support',
+                      textAlign: TextAlign.center,
+                      style: AppTheme.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.accentBlue)),
+                ],
+              ),
             ),
           ),
         ],
@@ -391,12 +385,21 @@ class ParametresScreen extends StatelessWidget {
     }
   }
 
+  IconData _typeIcon(String type) {
+    switch (type) {
+      case 'agriculteur': return CupertinoIcons.sun_max;
+      case 'pecheur': return CupertinoIcons.drop;
+      case 'marin': return Icons.directions_boat_outlined;
+      default: return CupertinoIcons.person;
+    }
+  }
+
   String _typeLabel(String type) {
     switch (type) {
-      case 'agriculteur': return '🌾 Agriculteur';
-      case 'pecheur': return '🎣 Pêcheur';
-      case 'marin': return '🚢 Marin';
-      default: return '👤 Citoyen';
+      case 'agriculteur': return 'Agriculteur';
+      case 'pecheur': return 'Pêcheur';
+      case 'marin': return 'Marin';
+      default: return 'Citoyen';
     }
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:meteomada/theme/app_theme.dart';
+import 'package:meteomada/utils/weather_helper.dart';
 
 class ForecastRow extends StatelessWidget {
   final String jour;
   final String date;
-  final Widget icone;
+  final String condition;
   final double tempMin;
   final double tempMax;
   final double? probabilitePluie;
@@ -16,7 +17,7 @@ class ForecastRow extends StatelessWidget {
     super.key,
     required this.jour,
     required this.date,
-    required this.icone,
+    required this.condition,
     required this.tempMin,
     required this.tempMax,
     this.probabilitePluie,
@@ -27,117 +28,74 @@ class ForecastRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pan = tempMax - tempMin;
-    final minPct = pan > 0 ? (tempMin - (tempMin - 2)) / (pan + 4) : 0.3;
-    final maxPct = pan > 0 ? (tempMax - (tempMin - 2)) / (pan + 4) : 0.7;
+    final icon = WeatherHelper.conditionIcon(condition);
+    final iconCol = WeatherHelper.conditionColor(condition);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: isToday ? 14 : 10),
-      decoration: isToday ? AppTheme.activeCard : AppTheme.glassCard,
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: isToday
+          ? AppTheme.glassActive(radius: 16, accent: AppTheme.accentBlue)
+          : AppTheme.glass(radius: 16),
+      child: Row(
         children: [
-          Row(
-            children: [
-              SizedBox(
-                width: 50,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(jour,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: isToday ? FontWeight.w700 : FontWeight.w600,
-                            color: Colors.white)),
-                    Text(date,
-                        style: TextStyle(
-                            fontSize: 10, color: AppTheme.textDim)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(width: 28, child: icone),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: Colors.white.withValues(alpha: 0.08),
-                      ),
-                    ),
-                    FractionallySizedBox(
-                      widthFactor: maxPct - minPct + 0.15,
-                      child: Container(
-                        height: 4,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          gradient: const LinearGradient(
-                            colors: [AppTheme.accentBlue, AppTheme.accentOrange],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 58,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('${tempMin.toStringAsFixed(0)}°',
-                        style: TextStyle(
-                            fontSize: 13, color: AppTheme.textSecondary)),
-                    const SizedBox(width: 4),
-                    Text('${tempMax.toStringAsFixed(0)}°',
-                        style: AppTheme.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (isToday && (probabilitePluie != null || vitesseVent != null || indiceUV != null))
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  if (probabilitePluie != null)
-                    _chip(Icons.water_drop, '${probabilitePluie!.toStringAsFixed(0)}%', AppTheme.accentBlue),
-                  if (vitesseVent != null)
-                    _chip(Icons.air, '${vitesseVent!.toStringAsFixed(0)} km/h', AppTheme.accentGreen),
-                  if (indiceUV != null)
-                    _chip(Icons.wb_sunny, '${indiceUV!.toStringAsFixed(0)}', AppTheme.accentOrange),
-                ],
+          SizedBox(
+            width: 48,
+            child: Text(
+              jour,
+              style: AppTheme.poppins(
+                fontSize: 12,
+                fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                color: Colors.white,
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _chip(IconData icon, String text, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(right: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withValues(alpha: 0.20)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 10, color: color),
-          const SizedBox(width: 3),
-          Text(text,
-              style: TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
+          ),
+          const SizedBox(width: 6),
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: iconCol.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 14, color: iconCol),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              condition,
+              style: AppTheme.poppins(
+                fontSize: 10,
+                color: AppTheme.textSecondary,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '${tempMin.toStringAsFixed(0)}°',
+            style: AppTheme.poppins(
+              fontSize: 11,
+              color: AppTheme.textDim,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              '${tempMax.toStringAsFixed(0)}°',
+              style: AppTheme.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
     );
