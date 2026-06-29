@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:meteomada/router/app_router.dart';
 import 'package:meteomada/providers/weather_provider.dart';
@@ -9,6 +8,7 @@ import 'package:meteomada/providers/alerte_provider.dart';
 import 'package:meteomada/providers/calendrier_provider.dart';
 import 'package:meteomada/providers/utilisateur_provider.dart';
 import 'package:meteomada/providers/marine_provider.dart';
+import 'package:meteomada/providers/locale_provider.dart';
 import 'package:meteomada/l10n/app_localizations.dart';
 import 'package:meteomada/database/database_helper.dart';
 import 'package:meteomada/services/notification_service.dart';
@@ -73,9 +73,10 @@ class MeteoMadaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => LocaleProvider()..initialiser()),
         ChangeNotifierProvider(create: (_) => WeatherProvider()..initialiser()),
         ChangeNotifierProvider(create: (_) => AlerteProvider()..initialiser()),
-        ChangeNotifierProvider(create: (_) => CalendrierProvider()),
+        ChangeNotifierProvider(create: (_) => CalendrierProvider()..initialiser()),
         ChangeNotifierProvider(
             create: (_) => UtilisateurProvider()..initialiser()),
         ChangeNotifierProvider(create: (_) => MarineProvider()),
@@ -83,29 +84,23 @@ class MeteoMadaApp extends StatelessWidget {
             create: (ctx) =>
                 FavorisProvider()..initialiser(ctx.read<UtilisateurProvider>().userId)),
       ],
-      child: const _ToeranaApp(),
+      child: const _MeteoMadaApp(),
     );
   }
 }
 
-class _ToeranaApp extends StatelessWidget {
-  const _ToeranaApp();
+class _MeteoMadaApp extends StatelessWidget {
+  const _MeteoMadaApp();
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.watch<LocaleProvider>().locale;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Toerana',
-      locale: const Locale('fr'),
-      supportedLocales: const [
-        Locale('fr'),
-      ],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      title: 'MeteoMada',
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: appRouter,
     );
   }

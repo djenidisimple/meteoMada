@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         child: Text('🌤', style: TextStyle(fontSize: 48))),
                   ),
                   const SizedBox(height: 24),
-                  Text('Toerana',
+                  Text('MeteoMada',
                       style: AppTheme.poppins(
                           fontSize: 40,
                           fontWeight: FontWeight.w800,

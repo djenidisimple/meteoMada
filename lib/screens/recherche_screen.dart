@@ -5,7 +5,7 @@ import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/services/geocoding_service.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/repositories/ville_repository.dart';
-import 'package:meteomada/providers/weather_provider.dart';
+import 'package:meteomada/providers/favoris_provider.dart';
 
 class RechercheScreen extends StatefulWidget {
   const RechercheScreen({super.key});
@@ -68,8 +68,33 @@ class _RechercheScreenState extends State<RechercheScreen> {
   }
 
   void _selectionner(Ville ville) async {
-    await context.read<WeatherProvider>().chargerMeteo(ville);
-    if (context.mounted) context.go('/home');
+    final fp = context.read<FavorisProvider>();
+    final dejaFavori = await fp.estFavori(ville.id);
+    if (!dejaFavori) {
+      await fp.ajouter(ville.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${ville.nom} ajouté aux favoris'),
+            backgroundColor: AppTheme.accentGreen,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${ville.nom} est déjà dans les favoris'),
+            backgroundColor: AppTheme.accentOrange,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+    if (mounted) {
+      context.pop();
+    }
   }
 
   @override

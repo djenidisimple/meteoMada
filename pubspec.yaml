@@ -1,5 +1,5 @@
 name: meteomada
-description: "Toerana - Application météo pour Madagascar"
+description: "MeteoMada - Application météo pour Madagascar"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -27,6 +27,7 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:

@@ -6,10 +6,37 @@ class CalendrierRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   StoreRef<String, Map<String, dynamic>> get _store => _dbHelper.calendrierCulturalStore;
 
-  Future<List<CalendrierCultural>> getTout() async {
-    final db = await _dbHelper.database;
-    final snapshots = await _store.find(db);
-    return snapshots.map((s) => CalendrierCultural.fromMap(s.value)).toList();
+  /// Tente de récupérer les données (ex: depuis l'API).
+  /// En cas d'échec, bascule automatiquement sur le store Sembast local.
+  Future<List<CalendrierCultural>> fetchCalendrier() async {
+    try {
+      // NOTE: Remplacer par un véritable appel API quand le backend sera prêt.
+      // Pour l'instant on lit Sembast en guise de source principale.
+      final db = await _dbHelper.database;
+      final snapshots = await _store.find(db);
+      if (snapshots.isEmpty) {
+        throw Exception('Source principale vide ou injoignable');
+      }
+      return snapshots.map((s) => CalendrierCultural.fromMap(s.value)).toList();
+    } catch (e) {
+      // FLUX DE REPLI LOCAL : Fallback sur Sembast
+      return await getFallbackLocal();
+    }
+  }
+
+  /// Lecture de secours stricte depuis Sembast.
+  /// Si le store est vide ou corrompu, renvoie une liste vide proprement.
+  Future<List<CalendrierCultural>> getFallbackLocal() async {
+    try {
+      final db = await _dbHelper.database;
+      final snapshots = await _store.find(db);
+      if (snapshots.isEmpty) {
+        return []; // Renvoie une liste vide au lieu de bloquer
+      }
+      return snapshots.map((s) => CalendrierCultural.fromMap(s.value)).toList();
+    } catch (e) {
+      return []; // Sécurité ultime : liste vide en cas de crash
+    }
   }
 
   Future<List<CalendrierCultural>> getCalendrierParRegion(String region) async {

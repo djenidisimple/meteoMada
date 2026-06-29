@@ -7,6 +7,7 @@ import 'package:meteomada/widgets/weather_gradient_bg.dart';
 import 'package:meteomada/widgets/glass_card.dart';
 import 'package:meteomada/widgets/culture_timeline.dart';
 import 'package:meteomada/providers/calendrier_provider.dart';
+import 'package:meteomada/providers/home_state.dart';
 import 'package:meteomada/models/calendrier_cultural.dart';
 import 'package:meteomada/widgets/loading_view.dart';
 
@@ -51,22 +52,53 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
         ),
         body: Consumer<CalendrierProvider>(
           builder: (_, cp, __) {
-            if (cp.chargement) {
-              return const LoadingView(message: 'Chargement du calendrier...');
-            }
-            if (cp.regions.isEmpty && cp.donnees.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.eco_outlined, size: 48, color: AppTheme.textDim),
-                    const SizedBox(height: 16),
-                    Text('Aucune donnée disponible',
-                        style: AppTheme.poppins(
-                            fontSize: 14, color: AppTheme.textSecondary)),
-                  ],
-                ),
-              );
+            switch (cp.etat) {
+              case HomeDataState.initial:
+              case HomeDataState.loading:
+                return const LoadingView(message: 'Chargement du calendrier...');
+
+              case HomeDataState.error:
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.wifi_off_rounded, size: 48, color: AppTheme.accentOrange),
+                      const SizedBox(height: 16),
+                      Text(cp.erreur ?? 'Erreur de chargement',
+                          style: AppTheme.poppins(fontSize: 14, color: AppTheme.textSecondary)),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () => cp.initialiser(),
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: Text('Réessayer', style: AppTheme.poppins()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accentOrange.withValues(alpha: 0.15),
+                          foregroundColor: AppTheme.accentOrange,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+              case HomeDataState.success:
+                if (cp.regions.isEmpty && cp.donnees.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.eco_outlined, size: 48, color: AppTheme.textDim),
+                        const SizedBox(height: 16),
+                        Text('Aucune donnée disponible',
+                            style: AppTheme.poppins(fontSize: 14, color: AppTheme.textSecondary)),
+                      ],
+                    ),
+                  );
+                }
+                // Si on a des données, on affiche le reste (le return SingleChildScrollView se trouve en dessous)
+                break;
             }
 
             return SingleChildScrollView(
@@ -225,10 +257,21 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
     );
   }
 
+  bool _isMonthInSpan(int month, int start, int end) {
+    final s = ((start - 1) % 12) + 1;
+    final e = ((end - 1) % 12) + 1;
+    final m = ((month - 1) % 12) + 1;
+    if (e >= s) {
+      return m >= s && m <= e;
+    } else {
+      return m >= s || m <= e;
+    }
+  }
+
   Widget _cultureCard(CalendrierCultural c) {
     final now = DateTime.now();
     final currentMonth = now.month;
-    final isActive = c.moisSemisDebut <= currentMonth && currentMonth <= c.moisSemisFin;
+    final isActive = _isMonthInSpan(currentMonth, c.moisSemisDebut, c.moisSemisFin);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

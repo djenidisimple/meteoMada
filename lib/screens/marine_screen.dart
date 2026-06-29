@@ -51,7 +51,13 @@ class _MarineScreenState extends State<MarineScreen> {
               child: const Icon(Icons.arrow_back_rounded,
                   color: Colors.white, size: 20),
             ),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/home');
+              }
+            },
           ),
           title: Row(
             children: [

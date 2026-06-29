@@ -32,7 +32,7 @@ class GeocodingService {
     final url = Uri.parse(
         '$_baseUrl/search?q=$query&countrycodes=mg&format=json&limit=15&addressdetails=1&accept-language=fr');
     final response = await http.get(url, headers: {
-      'User-Agent': 'ToeranaMeteoMada/1.0',
+      'User-Agent': 'MeteoMada/1.0',
     });
     final data = jsonDecode(response.body) as List<dynamic>;
     return data.map((item) {

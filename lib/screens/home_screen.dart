@@ -7,14 +7,63 @@ import 'package:meteomada/widgets/glass_card.dart';
 import 'package:meteomada/widgets/metric_strip.dart';
 import 'package:meteomada/widgets/hourly_card.dart';
 import 'package:meteomada/widgets/forecast_row.dart';
+import 'package:meteomada/widgets/home_info_grid.dart';
 import 'package:meteomada/providers/weather_provider.dart';
 import 'package:meteomada/providers/alerte_provider.dart';
+import 'package:meteomada/providers/marine_provider.dart';
+import 'package:meteomada/providers/calendrier_provider.dart';
 import 'package:meteomada/widgets/loading_view.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/utils/weather_helper.dart';
 
-class HomeScreen extends StatelessWidget {
+/// Écran d'accueil principal de MeteoMada.
+///
+/// Converti en [StatefulWidget] pour pouvoir déclencher le chargement
+/// initial des données marines et du calendrier cultural via les providers,
+/// qui n'étaient jamais appelés dans la version précédente.
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  /// Flag pour ne charger les données secondaires qu'une seule fois.
+  bool _donneesSecondairesChargees = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _chargerDonneesSecondaires();
+  }
+
+  /// Charge les données marine et calendrier dès que la ville actuelle est connue.
+  ///
+  /// Appelé dans [didChangeDependencies] plutôt que [initState] car
+  /// on a besoin d'accéder au context pour lire le WeatherProvider.
+  void _chargerDonneesSecondaires() {
+    if (_donneesSecondairesChargees) return;
+
+    final weather = context.read<WeatherProvider>();
+    final ville = weather.villeActuelle;
+    if (ville == null) return; // On attend que la ville soit chargée
+
+    _donneesSecondairesChargees = true;
+
+    // ── Charger les conditions marines si la ville est côtière ──
+    if (ville.estCotiere) {
+      final marine = context.read<MarineProvider>();
+      marine.chargerCondition(ville.id, ville.latitude, ville.longitude);
+    }
+
+    // ── Le CalendrierProvider est déjà initialisé dans main.dart ──
+    // Mais on peut charger les données spécifiques à la région
+    final calendrier = context.read<CalendrierProvider>();
+    if (calendrier.donnees.isEmpty) {
+      calendrier.initialiser();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +76,14 @@ class HomeScreen extends StatelessWidget {
             final p = weather.previsionActuelle;
             final ville = weather.villeActuelle;
 
+            // Si la ville vient de se charger, déclencher les données secondaires
+            if (ville != null && !_donneesSecondairesChargees) {
+              // Post-frame pour éviter de notifier pendant le build
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _chargerDonneesSecondaires();
+              });
+            }
+
             if (weather.chargement && p == null) {
               return const LoadingView(message: "Chargement de la météo...");
             }
@@ -37,17 +94,22 @@ class HomeScreen extends StatelessWidget {
             return SafeArea(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  if (ville != null) await weather.chargerMeteo(ville);
+                  if (ville != null) {
+                    await weather.chargerMeteo(ville);
+                    if (!mounted) return;
+                    // Rafraîchir aussi les données secondaires
+                    if (ville.estCotiere) {
+                      final marine = context.read<MarineProvider>();
+                      await marine.chargerCondition(
+                          ville.id, ville.latitude, ville.longitude);
+                    }
+                  }
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
-                      _header(context),
-                      const SizedBox(height: 16),
-                      _locationBlock(context,
-                          ville: ville?.nom ?? 'Fianarantsoa',
-                          pays: 'Madagascar'),
+                      _header(context, ville),
                       const SizedBox(height: 24),
                       _sunFlare(
                         child: _mainWeatherIllustration(context, condition),
@@ -65,6 +127,13 @@ class HomeScreen extends StatelessWidget {
                           indiceUV: p.indiceUV,
                         ),
                       const SizedBox(height: 24),
+
+                      // ═══════════════════════════════════════════
+                      // NOUVEAU : Grille 2×2 des 4 blocs d'infos
+                      // ═══════════════════════════════════════════
+                      const HomeInfoGrid(),
+                      const SizedBox(height: 24),
+
                       if (weather.erreur != null)
                         _errorBanner(weather.erreur!),
                       if (ville != null && ville.estCotiere)
@@ -96,7 +165,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ─── HEADER ──────────────────────────────────────────────
-  Widget _header(BuildContext context) {
+  Widget _header(BuildContext context, Ville? ville) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
       child: Row(
@@ -132,12 +201,24 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Text(
-            'Fianarantsoa, Madagascar',
-            style: AppTheme.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
+          Text.rich(
+            TextSpan(
+              text: ville?.nom ?? 'Fianarantsoa',
+              style: AppTheme.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+              children: [
+                TextSpan(
+                  text: ', Madagascar',
+                  style: AppTheme.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withValues(alpha: 0.55),
+                  ),
+                ),
+              ],
             ),
           ),
           const Spacer(),
@@ -159,32 +240,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── LOCATION BLOCK ──────────────────────────────────────
-  Widget _locationBlock(BuildContext context,
-      {required String ville, required String pays}) {
-    return Center(
-      child: Text.rich(
-        TextSpan(
-          text: ville,
-          style: AppTheme.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-          children: [
-            TextSpan(
-              text: ', $pays',
-              style: AppTheme.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withValues(alpha: 0.55),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   // ─── SUN FLARE ───────────────────────────────────────────
   Widget _sunFlare({required Widget child}) {
@@ -326,7 +382,7 @@ class HomeScreen extends StatelessWidget {
       child: GlassCard(
         borderRadius: 20,
         tintColor: AppTheme.accentGreen,
-        onTap: () => context.go('/home/marine/${ville.id}'),
+        onTap: () => context.push('/home/marine/${ville.id}'),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [

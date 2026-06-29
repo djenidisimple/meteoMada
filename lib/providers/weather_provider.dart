@@ -1,30 +1,45 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/models/prevision.dart';
+import 'package:meteomada/providers/home_state.dart';
 import 'package:meteomada/repositories/ville_repository.dart';
 import 'package:meteomada/repositories/prevision_repository.dart';
 import 'package:meteomada/services/api_service.dart';
 
+/// Provider principal de la météo.
+///
+/// Gère le cycle complet : chargement depuis le cache Sembast → appel API
+/// → mise à jour de l'état. Utilise [HomeDataState] pour que l'UI
+/// puisse réagir à chaque phase (loading / success / error).
 class WeatherProvider extends ChangeNotifier {
   final _villeRepo = VilleRepository();
   final _previsionRepo = PrevisionRepository();
   final _api = ApiService();
 
+  // ─── DONNÉES ────────────────────────────────────────────────
   Ville? _villeActuelle;
   Prevision? _previsionActuelle;
   List<Prevision> _previsions7Jours = [];
   List<Prevision> _previsionsHoraires = [];
-  bool _chargement = false;
+
+  // ─── ÉTAT ───────────────────────────────────────────────────
+  HomeDataState _etat = HomeDataState.initial;
   String? _erreur;
 
+  // ─── GETTERS ────────────────────────────────────────────────
   Ville? get villeActuelle => _villeActuelle;
   Prevision? get previsionActuelle => _previsionActuelle;
   List<Prevision> get previsions7Jours => _previsions7Jours;
   List<Prevision> get previsionsHoraires => _previsionsHoraires;
-  bool get chargement => _chargement;
+  HomeDataState get etat => _etat;
   String? get erreur => _erreur;
 
+  /// Rétro-compatibilité : le HomeScreen existant utilise `chargement`.
+  bool get chargement => _etat == HomeDataState.loading;
+
+  // ─── INITIALISATION ─────────────────────────────────────────
   Future<void> initialiser() async {
     try {
       _villeActuelle = await _villeRepo.getVilleParId('TNR');
@@ -36,35 +51,41 @@ class WeatherProvider extends ChangeNotifier {
           await chargerMeteo(_villeActuelle!);
         }
       });
-    } catch (_) {
-      _chargement = false;
+    } catch (e) {
+      debugPrint('[WeatherProvider] Erreur initialisation: $e');
+      _etat = HomeDataState.error;
       _erreur = 'Erreur de démarrage';
       notifyListeners();
     }
   }
 
+  // ─── CHARGEMENT MÉTÉO ───────────────────────────────────────
   Future<void> chargerMeteo(Ville ville) async {
     _erreur = null;
     _villeActuelle = ville;
     _previsionsHoraires = [];
 
+    // 1. Charger depuis le cache Sembast en priorité
     _previsionActuelle =
         await _previsionRepo.getDernierePrevision(ville.id);
     _previsions7Jours =
         await _previsionRepo.getPrevisions7Jours(ville.id);
 
+    // 2. Si le cache est valide, afficher immédiatement et rafraîchir en arrière-plan
     final valide = await _previsionRepo.cacheValide(ville.id);
     if (valide && _previsionActuelle != null) {
-      _chargement = false;
+      _etat = HomeDataState.success;
       notifyListeners();
       _rafraichirArrierePlan(ville);
     } else {
-      _chargement = true;
+      // Cache expiré ou vide → afficher le shimmer
+      _etat = HomeDataState.loading;
       notifyListeners();
       await _rafraichirArrierePlan(ville);
     }
   }
 
+  // ─── RAFRAÎCHISSEMENT API ───────────────────────────────────
   Future<void> _rafraichirArrierePlan(Ville ville) async {
     try {
       final results = await Future.wait([
@@ -81,6 +102,7 @@ class WeatherProvider extends ChangeNotifier {
           .map((p) => p.copyWith(villeId: ville.id))
           .toList();
 
+      // Persister dans Sembast pour le mode hors-ligne
       await _previsionRepo.supprimerVieillesPrevisions(ville.id);
       await _previsionRepo.insererPrevision(actuelle);
       await _previsionRepo.insererPrevisions(p7);
@@ -88,17 +110,30 @@ class WeatherProvider extends ChangeNotifier {
       _previsionActuelle = actuelle;
       _previsions7Jours = p7;
       _previsionsHoraires = horaires;
-      _chargement = false;
+      _etat = HomeDataState.success;
       _erreur = null;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[WeatherProvider] Erreur rafraîchissement: $e');
+
+      // FALLBACK : utiliser les données Sembast en cache
       _previsionActuelle ??=
           await _previsionRepo.getDernierePrevision(ville.id);
-      _chargement = false;
-      _erreur = 'Erreur de chargement';
+
+      // Si on a des données en cache, on passe en success avec un warning
+      if (_previsionActuelle != null) {
+        _etat = HomeDataState.success;
+        _erreur = 'Données en cache (hors ligne)';
+      } else {
+        // Aucune donnée disponible → erreur
+        _etat = HomeDataState.error;
+        _erreur = 'Impossible de charger la météo';
+      }
     }
+    // GARANTI : notifyListeners() est toujours appelé
     notifyListeners();
   }
 
+  // ─── CHARGEMENT PAR COORDONNÉES ─────────────────────────────
   Future<void> chargerPourVilleDepuisCoords(double lat, double lon) async {
     final id = GeocodingId.generer(lat, lon);
     var ville = await _villeRepo.getVilleParId(id);

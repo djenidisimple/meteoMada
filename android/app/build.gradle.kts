@@ -28,7 +28,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "mg.toerana.meteomada"
+        applicationId = "mg.meteomada"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = 1
@@ -49,12 +49,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = false
+            isShrinkResources = false
             signingConfig = signingConfigs.getByName("release")
         }
         debug {

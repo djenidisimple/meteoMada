@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meteomada/theme/app_theme.dart';
@@ -73,7 +74,19 @@ class AlertesScreen extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 60),
                               child: Column(
                                 children: [
-                                  Text('✅', style: TextStyle(fontSize: 48)),
+                                  Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.accentGreen.withValues(alpha: 0.12),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.check_circle_outline_rounded,
+                                      color: AppTheme.accentGreen,
+                                      size: 40,
+                                    ),
+                                  ),
                                   const SizedBox(height: 16),
                                   Text('Aucune alerte active',
                                       style: AppTheme.poppins(
@@ -137,7 +150,19 @@ class AlertesScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text('🌀', style: TextStyle(fontSize: 24)),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    CupertinoIcons.wind,
+                    color: color,
+                    size: 18,
+                  ),
+                ),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,10 +200,10 @@ class AlertesScreen extends StatelessWidget {
                   crossAxisSpacing: 6,
                   childAspectRatio: 3,
                   children: [
-                    _alertMetric('💨', 'Vent max', '120 km/h'),
-                    _alertMetric('🔽', 'Pression', '980 hPa'),
-                    _alertMetric('📍', 'Zones', '${a.regions.length} régions'),
-                    _alertMetric('⚠️', 'Impact', 'Élevé'),
+                    _alertMetric(CupertinoIcons.wind, AppTheme.accentBlue, 'Vent max', '120 km/h'),
+                    _alertMetric(Icons.compress_rounded, AppTheme.accentPurple, 'Pression', '980 hPa'),
+                    _alertMetric(Icons.location_on_rounded, AppTheme.accentOrange, 'Zones', '${a.regions.length} régions'),
+                    _alertMetric(Icons.warning_amber_rounded, AppTheme.accentRed, 'Impact', 'Élevé'),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -243,7 +268,7 @@ class AlertesScreen extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(c.emoji, style: const TextStyle(fontSize: 12)),
+                                  Icon(Icons.info_outline_rounded, size: 13, color: AppTheme.accentBlue),
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: Text(c.text,
@@ -277,7 +302,19 @@ class AlertesScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('🌀', style: TextStyle(fontSize: 14)),
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentOrange.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    CupertinoIcons.wind,
+                    color: AppTheme.accentOrange,
+                    size: 14,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(a.nomCyclone,
@@ -318,7 +355,7 @@ class AlertesScreen extends StatelessWidget {
     );
   }
 
-  Widget _alertMetric(String emoji, String label, String valeur) {
+  Widget _alertMetric(IconData icon, Color iconColor, String label, String valeur) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
@@ -327,8 +364,16 @@ class AlertesScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 4),
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, size: 13, color: iconColor),
+          ),
+          const SizedBox(width: 6),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -363,8 +408,8 @@ class AlertesScreen extends StatelessWidget {
   List<_Consigne> _parseConsignes(String consignes) {
     if (consignes.isEmpty) return [];
     final parts = consignes.split(RegExp(r'[•\n]')).where((s) => s.trim().isNotEmpty).toList();
-    if (parts.isEmpty) return [_Consigne('ℹ️', consignes)];
-    return parts.map((p) => _Consigne('ℹ️', p.trim())).toList();
+    if (parts.isEmpty) return [_Consigne(consignes)];
+    return parts.map((p) => _Consigne(p.trim())).toList();
   }
 
   String get _description =>
@@ -372,7 +417,6 @@ class AlertesScreen extends StatelessWidget {
 }
 
 class _Consigne {
-  final String emoji;
   final String text;
-  _Consigne(this.emoji, this.text);
+  _Consigne(this.text);
 }

@@ -6,6 +6,7 @@ import 'package:meteomada/theme/app_theme.dart';
 import 'package:meteomada/widgets/glass_card.dart';
 import 'package:meteomada/widgets/custom_switch.dart';
 import 'package:meteomada/providers/utilisateur_provider.dart';
+import 'package:meteomada/providers/locale_provider.dart';
 import 'package:meteomada/widgets/loading_view.dart';
 
 class ParametresScreen extends StatelessWidget {
@@ -218,6 +219,31 @@ class ParametresScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
+                  Icon(Icons.language_rounded, size: 14, color: AppTheme.textSecondary),
+                  const SizedBox(width: 8),
+                  Text('Langue',
+                      style: AppTheme.poppins(fontSize: 12, color: Colors.white)),
+                ],
+              ),
+              Consumer<LocaleProvider>(
+                builder: (context, lp, _) {
+                  return Row(
+                    children: [
+                      _langToggle('FR', lp.isFrench, () => lp.setLocale(const Locale('fr'))),
+                      const SizedBox(width: 6),
+                      _langToggle('MG', lp.isMalagasy, () => lp.setLocale(const Locale('mg'))),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
                   Icon(Icons.dark_mode_outlined, size: 14, color: AppTheme.textSecondary),
                   const SizedBox(width: 8),
                   Text('Thème sombre',
@@ -250,6 +276,30 @@ class ParametresScreen extends StatelessWidget {
               fontSize: 12,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
+    );
+  }
+
+  Widget _langToggle(String label, bool isActive, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: isActive
+            ? BoxDecoration(
+                color: AppTheme.accentBlue.withValues(alpha: 0.20),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppTheme.accentBlue.withValues(alpha: 0.40), width: 0.8),
+              )
+            : BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(8),
+              ),
+        child: Text(label,
+            style: AppTheme.poppins(
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                color: isActive ? AppTheme.accentBlue : AppTheme.textSecondary)),
+      ),
     );
   }
 
@@ -328,7 +378,7 @@ class ParametresScreen extends StatelessWidget {
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Support: contact@toerana.mg'),
+                  content: const Text('Support: contact@meteomada.mg'),
                   backgroundColor: AppTheme.backgroundDark,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

@@ -77,7 +77,8 @@ class CultureTimeline extends StatelessWidget {
   }
 
   Widget _bar(double totalWidth, int startMonth, int span, Color color) {
-    final left = (startMonth - 1) / 12.0;
+    final normalizedStart = ((startMonth - 1) % 12) + 1;
+    final left = (normalizedStart - 1) / 12.0;
     final width = span.clamp(0, 12) / 12.0;
     return Positioned(
       left: left * totalWidth,
@@ -96,8 +97,13 @@ class CultureTimeline extends StatelessWidget {
   }
 
   int _monthSpan(int start, int end) {
-    if (end >= start) return end - start + 1;
-    return (12 - start + 1) + end;
+    if (end - start + 1 >= 12) {
+      return 12;
+    }
+    final s = ((start - 1) % 12) + 1;
+    final e = ((end - 1) % 12) + 1;
+    if (e >= s) return e - s + 1;
+    return (12 - s + 1) + e;
   }
 
   String _monthName(int m) {
@@ -105,6 +111,8 @@ class CultureTimeline extends StatelessWidget {
       'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui',
       'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
     ];
-    return names[m - 1];
+    if (m <= 0) return names[0];
+    final idx = (m - 1) % 12;
+    return names[idx];
   }
 }

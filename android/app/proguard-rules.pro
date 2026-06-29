@@ -14,3 +14,8 @@
 # Keep HTTP client
 -keep class org.apache.http.** { *; }
 -dontwarn org.apache.http.**
+
+# Keep Play Core for deferred components (R8)
+-keep class com.google.android.play.core.splitcompat.** { *; }
+-keep class com.google.android.play.core.splitinstall.** { *; }
+-keep class com.google.android.play.core.tasks.** { *; }

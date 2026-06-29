@@ -34,6 +34,7 @@ class WeatherHelper {
 
   static String jourSemaine(int weekday) {
     const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    if (weekday < 1 || weekday > 7) return '';
     return jours[weekday - 1];
   }
 
@@ -41,6 +42,7 @@ class WeatherHelper {
     const jours = [
       'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'
     ];
+    if (weekday < 1 || weekday > 7) return '';
     return jours[weekday - 1];
   }
 
@@ -49,6 +51,7 @@ class WeatherHelper {
       'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui',
       'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
     ];
+    if (m < 1 || m > 12) return '';
     return mois[m - 1];
   }
 
@@ -57,6 +60,7 @@ class WeatherHelper {
       'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
       'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
     ];
+    if (m < 1 || m > 12) return '';
     return mois[m - 1];
   }
 
