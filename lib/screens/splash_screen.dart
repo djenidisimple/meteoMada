@@ -35,17 +35,14 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(26),
-                      color: Colors.white.withValues(alpha: 0.08),
-                      border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15), width: 0.5),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(26),
+                    child: Image.asset(
+                      'assets/images/logo.jpg',
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
                     ),
-                    child: const Center(
-                        child: Text('🌤', style: TextStyle(fontSize: 48))),
                   ),
                   const SizedBox(height: 24),
                   Text('MeteoMada',

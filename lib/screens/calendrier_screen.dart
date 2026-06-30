@@ -24,8 +24,6 @@ class _CalendrierScreenState extends State<CalendrierScreen> {
   @override
   void initState() {
     super.initState();
-    final cp = context.read<CalendrierProvider>();
-    cp.initialiser();
   }
 
   @override

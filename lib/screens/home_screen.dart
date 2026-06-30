@@ -11,16 +11,11 @@ import 'package:meteomada/widgets/home_info_grid.dart';
 import 'package:meteomada/providers/weather_provider.dart';
 import 'package:meteomada/providers/alerte_provider.dart';
 import 'package:meteomada/providers/marine_provider.dart';
-import 'package:meteomada/providers/calendrier_provider.dart';
 import 'package:meteomada/widgets/loading_view.dart';
 import 'package:meteomada/models/ville.dart';
 import 'package:meteomada/utils/weather_helper.dart';
 
 /// Écran d'accueil principal de MeteoMada.
-///
-/// Converti en [StatefulWidget] pour pouvoir déclencher le chargement
-/// initial des données marines et du calendrier cultural via les providers,
-/// qui n'étaient jamais appelés dans la version précédente.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -38,10 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _chargerDonneesSecondaires();
   }
 
-  /// Charge les données marine et calendrier dès que la ville actuelle est connue.
-  ///
-  /// Appelé dans [didChangeDependencies] plutôt que [initState] car
-  /// on a besoin d'accéder au context pour lire le WeatherProvider.
+  /// Charge les données marines dès que la ville actuelle est connue.
   void _chargerDonneesSecondaires() {
     if (_donneesSecondairesChargees) return;
 
@@ -58,11 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     // ── Le CalendrierProvider est déjà initialisé dans main.dart ──
-    // Mais on peut charger les données spécifiques à la région
-    final calendrier = context.read<CalendrierProvider>();
-    if (calendrier.donnees.isEmpty) {
-      calendrier.initialiser();
-    }
   }
 
   @override
